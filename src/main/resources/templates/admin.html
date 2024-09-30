@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .main-content {
+      margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="layout/header :: header"></div>
+
+<!-- Sidebar -->
+<div th:replace="layout/sidebar :: sidebar"></div>
+
+<!-- Nội dung chính của trang -->
+<div class="main-content">
+  <h2>Chào mừng Admin</h2>
+  <p>Đây là trang quản trị dành cho Admin.</p>
+  <a th:href="@{/logout}">Đăng xuất</a>
+</div>
+
+<!-- Footer -->
+<div th:replace="layout/footer :: footer"></div>
+
+</body>
+</html>

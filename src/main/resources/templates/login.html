@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        /* Đặt toàn bộ chiều cao và margin 0 cho toàn bộ trang */
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #00c6ff, #0072ff); /* Nền gradient xanh đẹp */
+        }
+
+        /* Kiểu dáng cho form đăng nhập */
+        form {
+            background-color: white;
+            padding: 2em;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #0072ff;
+            margin-bottom: 20px;
+        }
+
+        /* Kiểu cho các nhãn và ô nhập */
+        label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        input[type="text"], input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 1rem;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #0072ff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #005bb5;
+        }
+
+        /* Kiểu cho thông báo lỗi */
+        .error-message {
+            color: red;
+            text-align: center;
+            margin-top: -10px;
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<h2>Đăng nhập</h2>
+<form th:action="@{/login}" method="post">
+    <div>
+        <label for="username">Tên đăng nhập</label>
+        <input type="text" id="username" name="username" required>
+    </div>
+    <div>
+        <label for="password">Mật khẩu</label>
+        <input type="password" id="password" name="password" required>
+    </div>
+    <div>
+        <button type="submit">Đăng nhập</button>
+    </div>
+    <div th:if="${error}" class="error-message">
+        <p>[[${error}]]</p>
+    </div>
+</form>
+
+</body>
+</html>

@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Sửa Phòng Ban</title>
+</head>
+<body>
+<h2>Sửa Phòng Ban</h2>
+<form th:action="@{/admin/departments/edit/{id}(id=${department.id})}" th:object="${department}" method="post">
+    <label for="code">Mã Phòng Ban</label>
+    <input type="text" id="code" th:field="*{code}" required>
+
+    <label for="name">Tên Phòng Ban</label>
+    <input type="text" id="name" th:field="*{name}" required>
+
+    <button type="submit">Cập nhật</button>
+</form>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sidebar</title>
+</head>
+<body>
+<nav th:fragment="sidebar">
+  <ul style="list-style-type: none; padding: 0; width: 200px; background-color: #f4f4f4; height: 100%; position: fixed;">
+    <li style="padding: 15px; background-color: #0072ff; color: white; text-align: center;">Menu</li>
+    <li style="padding: 15px;"><a th:href="@{/admin/dashboard}" style="text-decoration: none;">Dashboard</a></li>
+    <li style="padding: 15px;"><a th:href="@{/admin/departments}" style="text-decoration: none;">Quản lý Phòng Ban</a></li>
+    <li style="padding: 15px;"><a th:href="@{/admin/employees}" style="text-decoration: none;">Quản lý Nhân Viên</a></li>
+    <li style="padding: 15px;"><a th:href="@{/admin/achievements}" style="text-decoration: none;">Quản lý Thành Tích/Kỷ Luật</a></li>
+    <li style="padding: 15px;"><a th:href="@{/admin/topEmployees}" style="text-decoration: none;">Nhân Viên Xuất Sắc</a></li>
+    <li style="padding: 15px;"><a th:href="@{/logout}" style="text-decoration: none; color: red;">Đăng xuất</a></li>
+  </ul>
+</nav>
+</body>
+</html>
