@@ -10,7 +10,7 @@ spring:
       connection-properties: useUnicode=true;characterEncoding=utf-8
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQL8Dialect
@@ -20,3 +20,26 @@ spring:
     mode: HTML5
     encoding: UTF-8
     cache: false
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 200MB
+      max-request-size: 200MB
+  messages:
+    basename: i18n/messages
+    encoding: UTF-8 # Ensure the correct encoding for the message properties
+
+  i18n:
+    enabled: true
+
+  # Add this section for dynamic locale switching
+#  web:
+#    locale: vi_VN # Default locale is Vietnamese
+#    locale-resolver: session # Allow session-based locale switching
+
+server:
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true

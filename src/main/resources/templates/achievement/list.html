@@ -84,52 +84,55 @@
     </script>
 </div>
 <!-- Header -->
-<div th:replace="layout/header :: header('Quản lý Phòng ban của Admin')"></div>
+<div th:replace="layout/header :: header('Quản lý Thành tích của Admin')"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 
 <!-- Nội dung chính của trang -->
 <div class="main-content">
-
+<!--     Toast Notification-->
     <div  id="toasts"  >
-      <span th:text="${successMessage}"></span>
+        <span th:text="${successMessage}"></span>
     </div>
 
-<!--    </div>-->
-    <h2>Danh sách Phòng Ban</h2>
-    <a th:href="@{/admin/departments/add}" style="color: green;">Thêm Phòng Ban</a>
+
+    <h2>Danh Sách Thành Tích</h2>
+    <a th:href="@{/admin/achievements/add}" style="color: green;">Thêm Thành Tích</a>
     <table>
         <thead>
         <tr>
-            <th>STT</th>
-            <th>Mã Phòng Ban</th>
-            <th>Tên Phòng Ban</th>
+            <th>ID</th>
+            <th>Nhân Viên</th>
+            <th>Loại</th>
+            <th>Lý Do</th>
+            <th>Ngày</th>
             <th>Hành Động</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="department, iterStat : ${departments}">
+        <tr th:each="achievement,iterStat : ${achievements}">
             <td th:text="${iterStat.count}"></td> <!-- Số thứ tự -->
-            <td th:text="${department.code}"></td>
-            <td th:text="${department.name}"></td>
+            <td th:text="${achievement.employee.name}"></td>
             <td>
-                <a th:href="@{/admin/departments/edit/{id}(id=${department.id})}">Sửa</a> |
-                <a th:href="@{/admin/departments/delete/{id}(id=${department.id})}" style="color: red;">Xóa</a>
+                <span th:if="${achievement.type == 0}" th:text="'Kỷ luật'"></span>
+                <span th:if="${achievement.type == 1}" th:text="'Khen thưởng'"></span>
+            </td>            <td th:text="${achievement.reason}"></td>
+            <td th:text="${achievement.date}"></td>
+            <td>
+                <a th:href="@{/admin/achievements/edit/{id}(id=${achievement.id})}">Sửa</a> |
+                <a th:href="@{/admin/achievements/delete/{id}(id=${achievement.id})}" style="color: red;">Xóa</a>
             </td>
         </tr>
         </tbody>
     </table>
+
 </div>
 
 <!-- Footer -->
-<div th:replace="layout/footer :: footer"></div>
-
-
-<script src="/js/language-selector.js"></script>
+<div th:replace="layout/footer :: footer"></div><script src="/js/language-selector.js"></script>
 
 <script>
-
     window.onload = function () {
         // Đặt thời gian chờ 3 giây (3000 milliseconds)
         setTimeout(function () {
@@ -145,6 +148,5 @@
         }, 3000); // 3 giây
     };
 </script>
-
 </body>
 </html>

@@ -1,23 +1,17 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Thêm Phòng Ban</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chỉnh sửa Phòng Ban</title>
     <style>
         body {
             font-family: Arial, sans-serif;
         }
 
         .main-content {
-            position: relative;
             margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 70vh;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
 
         table {
@@ -55,8 +49,23 @@
         a:hover {
             text-decoration: underline;
         }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
 
-        input[type="text"], input[type="number"] {
+        .col-6 {
+            width: calc(50% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+            box-sizing: border-box;
+        }
+
+        input[type="text"], input[type="number"],input[type="date"],select ,
+        .select-content , textarea{
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -66,8 +75,14 @@
             font-size: 14px;
         }
 
-        input.error {
-            border: 1px solid red;
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .full-width{
+            width: calc(100% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+            box-sizing: border-box;
         }
 
         button {
@@ -100,33 +115,60 @@
             font-size: 14px; /* Kích thước font chữ */
         }
     </style>
-
 </head>
 <body>
+
 <!-- Header -->
-<div th:replace="layout/header :: header('Chỉnh sửa thông tin Phòng ban của Admin')"></div>
+<div th:replace="layout/header :: header('Chỉnh sửa thông tin thành tích của Admin')"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 
 <!-- Nội dung chính -->
 <div class="main-content">
-
     <div  id="toast-error" >
         <span th:text="${errorMessage}"></span>
     </div>
+    <h2>Chỉnh sửa thành tích</h2>
 
 
-    <h2>Thêm Phòng Ban</h2>
-    <form th:action="@{/admin/departments/add}" th:object="${department}" method="post">
-        <label for="code">Mã Phòng Ban</label>
-        <input type="text" id="code" th:field="*{code}" required>
+    <!-- Form chỉnh sửa phòng ban -->
 
-        <label for="name">Tên Phòng Ban</label>
-        <input type="text" id="name" th:field="*{name}" required>
+    <form th:action="@{/admin/achievements/edit/{id}(id=${achievement.id})}" th:object="${achievement}" method="post">
+        <div class="grid">
+            <div class="col-6">
+                <label for="employee">Nhân Viên:</label>
+                <select class="select-content" th:field="*{employee.id}">
+                    <option value="" disabled selected>Chọn Nhân Viên</option>
+                    <option th:each="employee : ${employees}" th:value="${employee.id}" th:text="${employee.name}"></option>
+                </select>
+            </div>
 
-        <button type="submit">Lưu</button>
+            <div class="col-6">
+                <label for="type">Loại:</label>
+                <select   class="select-content" th:field="*{type}" id="type">
+                    <option value="0" th:selected="${achievement.type == 0}">Kỷ luật</option>
+                    <option value="1" th:selected="${achievement.type == 1}">Khen thưởng</option>
+                </select>
+            </div>
+
+
+            <div class="full-width">
+                <label for="reason">Lý Do:</label>
+                <textarea th:field="*{reason}" id="reason" placeholder="Nhập lý do"></textarea>
+            </div>
+
+            <div class="col-6">
+                <label for="date">Ngày:</label>
+                <input type="date" th:field="*{date}" id="date">
+            </div>
+
+            <div class="full-width">
+                <button type="submit">Lưu</button>
+            </div>
+        </div>
     </form>
+
 </div>
 
 <!-- Footer -->
@@ -135,7 +177,7 @@
 
 <script>
 
-   window.onload = function () {
+    window.onload = function () {
         // Đặt thời gian chờ 3 giây (3000 milliseconds)
         setTimeout(function () {
             console.log("vao dta");

@@ -6,16 +6,41 @@
   <title>Sidebar</title>
 </head>
 <body>
-<nav th:fragment="sidebar">
-  <ul style="list-style-type: none; padding: 0; width: 200px; background-color: #f4f4f4; height: 100%; position: fixed;">
-    <li style="padding: 15px; background-color: #0072ff; color: white; text-align: center;">Menu</li>
-    <li style="padding: 15px;"><a th:href="@{/admin/dashboard}" style="text-decoration: none;">Dashboard</a></li>
-    <li style="padding: 15px;"><a th:href="@{/admin/departments}" style="text-decoration: none;">Quản lý Phòng Ban</a></li>
-    <li style="padding: 15px;"><a th:href="@{/admin/employees}" style="text-decoration: none;">Quản lý Nhân Viên</a></li>
-    <li style="padding: 15px;"><a th:href="@{/admin/achievements}" style="text-decoration: none;">Quản lý Thành Tích/Kỷ Luật</a></li>
-    <li style="padding: 15px;"><a th:href="@{/admin/topEmployees}" style="text-decoration: none;">Nhân Viên Xuất Sắc</a></li>
-    <li style="padding: 15px;"><a th:href="@{/logout}" style="text-decoration: none; color: red;">Đăng xuất</a></li>
-  </ul>
-</nav>
+<div th:fragment="sidebar">
+  <div class="sidebar" style="width: 220px; background: linear-gradient(to bottom, #00b4db, #0083b0); color: white; position: fixed; height: 100%; padding-top: 20px;">
+    <h3 style="text-align: center; color: white;">Menu</h3>
+    <ul style="list-style-type: none; padding-left: 10px;">
+
+      <!-- Menu for Admin -->
+      <li th:if="${session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/admin/departments/list(lang=${#locale.language})}" style="color: white;">[[#{menu.department}]]</a>
+      </li>
+      <li th:if="${session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/admin/employees/list(lang=${#locale.language})}" style="color: white;">[[#{menu.employee}]]</a>
+      </li>
+      <li th:if="${session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/admin/achievements/list(lang=${#locale.language})}" style="color: white;">[[#{menu.achievements}]]</a>
+      </li>
+
+      <li th:if="${session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/admin/achievements/summary(lang=${#locale.language})}" style="color: white;">[[#{menu.summaryAchievements}]]</a>
+      </li>
+
+      <!-- Menu for Regular User -->
+      <li th:if="${!session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/user/profile(lang=${#locale.language})}" style="color: white;">[[#{menu.profile}]]</a>
+      </li>
+      <li th:if="${!session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/user/tasks(lang=${#locale.language})}" style="color: white;">[[#{menu.tasks}]]</a>
+      </li>
+      <li th:if="${!session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
+        <a th:href="@{/user/achievements(lang=${#locale.language})}" style="color: white;">[[#{menu.userAchievements}]]</a>
+      </li>
+
+      <!-- Logout -->
+      <li><a th:href="@{/logout}" style="color: #ff4d4d; padding: 10px; display: block;">[[#{logout}]]</a></li>
+    </ul>
+  </div>
+</div>
 </body>
 </html>

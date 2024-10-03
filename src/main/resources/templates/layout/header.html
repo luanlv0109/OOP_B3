@@ -3,13 +3,59 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Header</title>
+  <title th:text="${title}">Trang Quản Trị</title>
 </head>
 <body>
-<header th:fragment="header">
+<header th:fragment="header(title)">
   <div style="background-color: #0072ff; color: white; padding: 1em; text-align: center;">
-    <h1>Trang Quản Trị - Admin</h1>
+    <h1 th:text="${title}"></h1>
+  </div>
+
+  <!-- Language Selector -->
+  <div style="text-align: right; padding: 1em;">
+    <span th:text="#{lang.change}"></span>:
+    <select id="locales">
+      <option value="" disabled selected>Select Language</option>
+      <option value="en" th:text="#{lang.eng}">English</option>
+      <option value="vi" th:text="#{lang.vi}">Tiếng Việt</option>
+    </select>
   </div>
 </header>
+
+<!-- jQuery to handle the language change -->
+<script type="text/javascript">
+  window.onload = function() {
+    console.log("Window đã tải xong.");
+
+    // Kiểm tra nếu localStorage đã lưu ngôn ngữ trước đó
+    const savedLang = localStorage.getItem('language');
+    console.log("Saved Language from localStorage: " + savedLang); // Kiểm tra giá trị
+
+    if (savedLang) {
+      setLanguage(savedLang, false); // Thiết lập ngôn ngữ từ localStorage
+    } else {
+      setLanguage('vi', false); // Thiết lập mặc định là tiếng Việt
+    }
+
+    // Lắng nghe sự thay đổi ngôn ngữ khi chọn trong dropdown
+    document.getElementById('locales').addEventListener('change', function () {
+      const selectedLang = this.value;
+      console.log("Selected Language: " + selectedLang); // In ngôn ngữ được chọn
+      if (selectedLang) {
+        localStorage.setItem('language', selectedLang);
+        setLanguage(selectedLang, true); // Reload trang với ngôn ngữ mới
+      }
+    });
+  };
+
+  function setLanguage(lang, reload) {
+    console.log("Setting language to: " + lang);
+    if (reload) {
+      window.location.href = window.location.pathname + '?lang=' + lang;
+    }
+  }
+
+</script>
+
 </body>
 </html>

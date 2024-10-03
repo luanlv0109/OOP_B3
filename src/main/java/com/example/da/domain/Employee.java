@@ -1,9 +1,11 @@
 package com.example.da.domain;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDate;
 
@@ -12,13 +14,12 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "employees")
-public class Employee {
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
+public class    Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "FK_department_employee"))
@@ -38,7 +39,7 @@ public class Employee {
     private String image;
 
     @Column(name = "dob")
-    @Temporal(TemporalType.DATE)
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate dob;
 
     @Column(name = "salary")

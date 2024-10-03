@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Employee Achievement Summary</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .main-content {
+            margin-left: 240px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: none; /* Xóa đường viền mặc định */
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0083b0;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+
+        a {
+            color: #0083b0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: none; /* Ẩn mặc định */
+        }
+
+        .toast.show {
+            display: block; /* Hiển thị khi có class "show" */
+        }
+
+        .toast .close {
+            float: right;
+            font-size: 20px;
+            line-height: 20px;
+            cursor: pointer;
+            color: #155724;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<!-- Header -->
+<div th:replace="layout/header :: header('Thống kê thành tích của Admin')"></div>
+
+<!-- Sidebar -->
+<div th:replace="layout/sidebar :: sidebar"></div>
+<div class="main-content">
+    <h2>Tổng hợp thành tích và kỷ luật</h2>
+    <table border="1">
+        <thead>
+        <tr>
+            <th>STT</th>
+            <th>Tên Nhân Viên</th>
+            <th>Phòng Ban</th>
+            <th>Hình Ảnh</th>
+            <th>Điểm Thành Tích</th>
+            <th>Điểm Kỷ Luật</th>
+            <th>Tổng Điểm</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="employee,iterStat : ${employeeSummaries}">
+            <td th:text="${iterStat.count}"></td> <!-- Số thứ tự -->
+            <td th:text="${employee.employeeName}"></td>
+            <td th:text="${employee.departmentName}"></td>
+            <td>            <img th:if="${employee.employeeImage != null}" th:src="@{/admin/employees/files/{filename}(filename=${employee.employeeImage})}" alt="Employee Image" style="height: 80px; width: 80px"/>
+            </td>
+            <td th:text="${employee.totalAchievements}"></td> <!-- Sửa lại tên thuộc tính -->
+            <td th:text="${employee.totalDisciplinary}"></td> <!-- Sửa lại tên thuộc tính -->
+            <td th:text="${employee.finalScore}"></td> <!-- Sửa lại tên thuộc tính -->
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+<script src="/js/language-selector.js"></script>
+
+</html>
