@@ -2,6 +2,7 @@ package com.example.da.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,7 +24,6 @@ public class    Employee {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "department_id", foreignKey = @ForeignKey(name = "FK_department_employee"))
-
     private Department department;
 
     @Column(name = "code", length = 10)
@@ -53,6 +53,7 @@ public class    Employee {
 
     @Column(name = "phone", length = 15)
     private String phone;
+
 
     @Column(name = "note", columnDefinition = "TEXT")
     private String note;

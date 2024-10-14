@@ -1,9 +1,9 @@
 package com.example.da.Controller;
 
 import com.example.da.Service.DepartmentService;
-import com.example.da.domain.Department;
-import com.example.da.domain.User;
+import com.example.da.dto.DepartmentDTO;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import static com.example.da.utils.Constant.*;
 
 @Slf4j
 @Controller
@@ -20,87 +22,79 @@ public class DepartmentAdminController {
     @Autowired
     private DepartmentService departmentService;
 
-     // Hiển thị danh sách phòng ban
+    // Display department list
     @GetMapping("/list")
     public String viewDepartments(Model model) {
         model.addAttribute("departments", departmentService.getAllDepartments());
-        return "department/list";  // Chuyển hướng đến trang list.html trong thư mục department
+        return "department/list";
     }
 
-    // Hiển thị form thêm phòng ban
+    // Display add form
     @GetMapping("/add")
-    public String showAddForm(Model model , HttpSession session) {
-        model.addAttribute("department", new Department());
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            // Redirect to login page if no user is found in session
+    public String showAddForm(Model model, HttpSession session) {
+        model.addAttribute("departmentDTO", new DepartmentDTO());
+        if (session.getAttribute("user") == null) {
             return "redirect:/login";
         }
-        return "department/add";  // Chuyển hướng đến trang add.html trong thư mục department
+        return "department/add";
     }
-
     // Xử lý thêm phòng ban
     @PostMapping("/add")
-    public String addDepartment(@ModelAttribute("department") Department department,
+    public String addDepartment(@ModelAttribute("departmentDTO") @Valid DepartmentDTO departmentDTO,
                                 BindingResult bindingResult,
                                 Model model,
                                 RedirectAttributes redirectAttributes) {
-
-        // Kiểm tra lỗi khi nhập liệu
         if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "department/add";
         }
 
-        if(!departmentService.saveDepartment(department)){
-            log.info("vao day:{}" , departmentService.saveDepartment(department));
-            model.addAttribute("errorMessage", "Thông tin phòng ban đã tồn tại");
+        if (!departmentService.addDepartment(departmentDTO)) {
+            model.addAttribute("errorMessage", DEPARTMENT_EXIST_ERROR);
             return "department/add";
         }
 
-        departmentService.saveDepartment(department);
-        redirectAttributes.addFlashAttribute("successMessage", "Phòng ban đã được thêm thành công");
-        return "redirect:/admin/departments/list";  // Chuyển hướng lại danh sách phòng ban
+        redirectAttributes.addFlashAttribute("successMessage", DEPARTMENT_ADD_SUCCESS);
+        return "redirect:/admin/departments/list";
     }
 
-    // Hiển thị form chỉnh sửa phòng ban
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Department department = departmentService.getDepartmentById(id);
-        if (department == null) {
-            return "redirect:/admin/departments/list";  // Nếu không tìm thấy phòng ban, chuyển hướng về danh sách
+        DepartmentDTO departmentDTO = departmentService.getDepartmentById(id);
+        if (departmentDTO == null) {
+            return "redirect:/admin/departments/list";
         }
-        model.addAttribute("department", department);
-        return "department/edit";  // Chuyển hướng đến trang edit.html trong thư mục department
+        model.addAttribute("departmentDTO", departmentDTO);
+        return "department/edit";
     }
 
     // Xử lý cập nhật phòng ban
     @PostMapping("/edit/{id}")
     public String updateDepartment(@PathVariable Long id,
-                                   @ModelAttribute("department") Department department,
+                                   @ModelAttribute("departmentDTO") @Valid DepartmentDTO departmentDTO,
                                    BindingResult bindingResult,
                                    Model model,
                                    RedirectAttributes redirectAttributes) {
-
-        // Kiểm tra lỗi khi nhập liệu
         if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "department/edit";
         }
 
-        department.setId(id);  // Đảm bảo ID được đặt đúng
-
-        if(!departmentService.saveDepartment(department)){
-            model.addAttribute("errorMessage", "Thông tin phòng ban đã tồn tại");
+        if (!departmentService.updateDepartment(id, departmentDTO)) {
+            model.addAttribute("errorMessage", DEPARTMENT_EXIST_ERROR);
             return "department/edit";
         }
-        redirectAttributes.addFlashAttribute("successMessage", "Phòng ban đã được cập nhật thành công");
-        return "redirect:/admin/departments/list";  // Chuyển hướng lại danh sách phòng ban
+
+        redirectAttributes.addFlashAttribute("successMessage", DEPARTMENT_UPDATE_SUCCESS);
+        return "redirect:/admin/departments/list";
     }
 
-    // Xử lý xóa phòng ban
     @GetMapping("/delete/{id}")
     public String deleteDepartment(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         departmentService.deleteDepartment(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Phòng ban đã được xóa thành công");
-        return "redirect:/admin/departments/list";  // Chuyển hướng lại danh sách phòng ban
+        redirectAttributes.addFlashAttribute("successMessage", DEPARTMENT_DELETE_SUCCESS);
+        return "redirect:/admin/departments/list";
     }
 }

@@ -1,258 +1,250 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chỉnh sửa Phòng Ban</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
 
-        .main-content {
-            margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
-            padding: 20px;
-            margin-bottom: 200px;
-        }
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Chỉnh sửa Phòng Ban</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .main-content {
+                margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+                padding: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+            table, th, td {
+                border: 1px solid #ddd;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
+            th {
+                background-color: #f4f4f4;
+            }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+            a {
+                color: blue;
+                text-decoration: none;
+            }
+            a:hover {
+                text-decoration: underline;
+            }
+            .grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                background-color: #fff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
+            .col-6 {
+                width: calc(50% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+                box-sizing: border-box;
+            }
 
-        table, th, td {
-            border: 1px solid #ddd;
-        }
+            input[type="text"], input[type="number"],
+            input[type="email"], input[type="date"],
+            .main-content > select, textarea{
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+                font-size: 14px;
+            }
 
-        th, td {
-            padding: 8px;
-            text-align: left;
-        }
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+            .full-width{
+                width: calc(100% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+                box-sizing: border-box;
+            }
 
-        th {
-            background-color: #f4f4f4;
-        }
+            button {
+                width: 100%;
+                padding: 12px;
+                background-color: #0083b0;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
 
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+            button:hover {
+                background-color: #00729a;
+            }
 
-        tr:hover {
-            background-color: #f1f1f1;
-        }
+            #toast-error {
+                position: absolute; /* Định vị theo absolute */
+                top: 70px; /* Cách phần trên cùng của trang 170px */
+                right: 20px; /* Cách phần bên phải của trang 20px */
+                background-color: #f8d7da; /* Màu nền đỏ nhạt (thể hiện lỗi) */
+                color: #721c24; /* Màu chữ đỏ đậm */
+                border: 1px solid #f5c6cb; /* Viền đỏ nhạt */
+                padding: 15px; /* Khoảng cách padding */
+                border-radius: 5px; /* Bo góc */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+                z-index: 1000; /* Đảm bảo toast nằm trên cùng */
+                font-size: 14px; /* Kích thước font chữ */
+            }
+        </style>
 
-        a {
-            color: blue;
-            text-decoration: none;
-        }
+    </head>
+    <body>
 
-        a:hover {
-            text-decoration: underline;
-        }
-        .grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .col-6 {
-            width: calc(50% - 10px); /* 50% width trừ khoảng cách giữa các cột */
-            box-sizing: border-box;
-        }
-        input[type="text"], input[type="number"],
-        input[type="email"], input[type="date"], select, textarea {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .full-width{
-            width: calc(100% - 10px); /* 50% width trừ khoảng cách giữa các cột */
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #0083b0;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #00729a;
-        }
-
-        #toast-error {
-            position: absolute; /* Định vị theo absolute */
-            top: 70px; /* Cách phần trên cùng của trang 170px */
-            right: 20px; /* Cách phần bên phải của trang 20px */
-            background-color: #f8d7da; /* Màu nền đỏ nhạt (thể hiện lỗi) */
-            color: #721c24; /* Màu chữ đỏ đậm */
-            border: 1px solid #f5c6cb; /* Viền đỏ nhạt */
-            padding: 15px; /* Khoảng cách padding */
-            border-radius: 5px; /* Bo góc */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
-            z-index: 1000; /* Đảm bảo toast nằm trên cùng */
-            font-size: 14px; /* Kích thước font chữ */
-        }
-        .img-preview{
-            height: 200px;
-            width: 200px;
-        }
-    </style>
-</head>
-<body>
-
-<!-- Header -->
-<div th:replace="~{layout/header :: header('Chỉnh sửa thông tin Nhân viên của Admin')}"></div>
-
-<!-- Sidebar -->
-<div th:replace="layout/sidebar :: sidebar"></div>
-
-<!-- Nội dung chính -->
-<div class="main-content">
-
-    <div  id="toast-error" >
-        <span th:text="${errorMessage}"></span>
+    <div th:if="${session.user == null}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.location.href = /*[[@{/login}]]*/ '/login';
+            /*]]>*/
+        </script>
     </div>
 
-    <h2>chỉnh sửa thông tin  Nhân Viên</h2>
-    <form th:action="@{/admin/employees/edit/{id}(id=${employee.id})}" th:object="${employee}" method="post"  enctype="multipart/form-data">
-        <div class="grid">
-            <div class="col-6">
-                <label for="code">Mã Nhân Viên:</label>
-                <input type="text" th:field="*{code}" id="code" placeholder="Nhập mã nhân viên" maxlength="10">
-            </div>
+    <!-- Header -->
+    <div th:replace="~{layout/header :: header(#{employee.editHeader})}"></div>
 
-            <div class="col-6">
-                <label for="name">Tên Nhân Viên:</label>
-                <input type="text" th:field="*{name}" id="name" placeholder="Nhập tên nhân viên">
-            </div>
+    <!-- Sidebar -->
+    <div th:replace="layout/sidebar :: sidebar"></div>
 
-            <div class="col-6">
-                <label for="email">Email:</label>
-                <input type="email" th:field="*{email}" id="email" placeholder="Nhập email">
-            </div>
+    <!-- Nội dung chính -->
+    <div class="main-content">
+
+        <div id="toast-error">
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+        <h2 th:text="#{employee.editHeader}">Chỉnh sửa thông tin Nhân Viên</h2>
+        <form th:action="@{/admin/employees/edit/{id}(id=${employee.id})}" th:object="${employee}" method="post" enctype="multipart/form-data">
+            <div class="grid">
+                <div class="col-6">
+                    <label for="code" th:text="#{label.employeeCode}">Mã Nhân Viên:</label>
+                    <input type="text" th:field="*{code}" id="code" th:placeholder="#{label.enterEmployeeCode}" maxlength="10">
+                </div>
 
                 <div class="col-6">
-                    <label for="dob">Ngày Sinh:</label>
-                    <input type="date" th:field="*{dob}" id="dob" />
+                    <label for="name" th:text="#{label.employeeName}">Tên Nhân Viên:</label>
+                    <input type="text" th:field="*{name}" id="name" th:placeholder="#{label.enterEmployeeName}">
                 </div>
-<!--            <p th:text="${employee.dob}"></p> &lt;!&ndash; In ra giá trị của dob &ndash;&gt;-->
 
-            <div class="col-6">
-                <label for="gender">Giới Tính:</label>
-                <select th:field="*{gender}" id="gender">
-                    <option value="Male">Nam</option>
-                    <option value="Female">Nữ</option>
-                    <option value="Other">Khác</option>
-                </select>
+                <div class="col-6">
+                    <label for="email" th:text="#{label.employeeEmail}">Email:</label>
+                    <input type="email" th:field="*{email}" id="email" th:placeholder="#{label.enterEmail}">
+                </div>
+
+                <div class="col-6">
+                    <label for="dob" th:text="#{label.employeeDob}">Ngày Sinh:</label>
+                    <input type="date" th:field="*{dob}" id="dob"/>
+                </div>
+
+                <div class="col-6">
+                    <label for="gender" th:text="#{label.employeeGender}">Giới Tính:</label>
+                    <select th:field="*{gender}" id="gender">
+                        <option value="Male" th:text="#{label.male}">Nam</option>
+                        <option value="Female" th:text="#{label.female}">Nữ</option>
+                        <option value="Other" th:text="#{label.other}">Khác</option>
+                    </select>
+                </div>
+
+                <div class="col-6">
+                    <label for="imageFile" th:text="#{label.employeeImage}">Ảnh:</label>
+                    <img id="imagePreview" th:src="@{/admin/employees/files/{filename}(filename=${employee.image})}" alt="Employee Image" class="img-preview"/>
+                    <input type="file" id="imageFile" name="imageFile" accept="image/*" onchange="previewImage(event)"/>
+                </div>
+
+                <div class="col-6">
+                    <label for="salary" th:text="#{label.employeeSalary}">Lương:</label>
+                    <input type="number" th:field="*{salary}" id="salary" th:placeholder="#{label.enterSalary}">
+                </div>
+
+                <div class="col-6">
+                    <label for="level" th:text="#{label.employeeLevel}">Cấp Bậc:</label>
+                    <input type="number" th:field="*{level}" id="level" th:placeholder="#{label.enterLevel}">
+                </div>
+
+                <div class="col-6">
+                    <label for="phone" th:text="#{label.employeePhone}">Số Điện Thoại:</label>
+                    <input type="text" th:field="*{phone}" id="phone" th:placeholder="#{label.enterPhone}">
+                </div>
+
+                <div class="col-6">
+                    <label for="department" th:text="#{label.employeeDepartment}">Phòng Ban:</label>
+                    <select th:field="*{departmentId}">
+                        <option value="" th:text="#{label.selectDepartment}">Chọn Phòng Ban</option>
+                        <option th:each="department : ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
+                    </select>
+                </div>
+
+                <div class="full-width">
+                    <label for="note" th:text="#{label.employeeNote}">Ghi Chú:</label>
+                    <textarea th:field="*{note}" id="note" th:placeholder="#{label.enterNote}"></textarea>
+                </div>
+
+                <div class="full-width">
+                    <button type="submit" th:text="#{button.save}">Lưu</button>
+                </div>
             </div>
+        </form>
+    </div>
+    <!-- Footer -->
+    <div th:replace="layout/footer :: footer"></div>
+    <script src="/js/language-selector.js"></script>
 
-            <div class="col-6">
-                <label for="imageFile">Ảnh:</label>
-                <!-- Hiển thị ảnh hiện tại -->
-                <img id="imagePreview" th:src="@{/admin/employees/files/{filename}(filename=${employee.image})}" alt="Employee Image" class="img-preview"/>
+    <script th:inline="javascript">
 
-                <!-- Chọn ảnh mới -->
-                <input type="file" id="imageFile" name="imageFile" accept="image/*" onchange="previewImage(event)"/>
-            </div>
+        // Log thông tin employee ra console
+        var employee = /*[[${employee}]]*/ JSON.parse(JSON.stringify([[${employee}]]));
+        console.log('Employee details:', employee);    console.log('Employee:', JSON.stringify(employee, null, 2));
 
-            <div class="col-6">
-                <label for="salary">Lương:</label>
-                <input type="number" th:field="*{salary}" id="salary" placeholder="Nhập mức lương">
-            </div>
+        // Function để xem trước ảnh khi chọn file ảnh mới
+        function previewImage(event) {
+            const imagePreview = document.getElementById('imagePreview');
 
-            <div class="col-6">
-                <label for="level">Cấp Bậc:</label>
-                <input type="number" th:field="*{level}" id="level" placeholder="Nhập cấp bậc">
-            </div>
+            // Nếu người dùng chọn một file mới
+            if (event.target.files && event.target.files[0]) {
+                const reader = new FileReader();
 
-            <div class="col-6">
-                <label for="phone">Số Điện Thoại:</label>
-                <input type="text" th:field="*{phone}" id="phone" placeholder="Nhập số điện thoại">
-            </div>
+                // Khi đọc file hoàn tất, thay đổi src của thẻ img
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;  // Đặt src là URL của ảnh mới
+                };
 
-            <div class="col-6">
-                <label for="department">Phòng Ban:</label>
-                <select th:field="*{department.id}">
-                    <option value="">Chọn Phòng Ban</option>
-                    <option th:each="department : ${departments}" th:value="${department.id}" th:text="${department.name}"></option>
-                </select>
-            </div>
-
-            <div class="full-width">
-                <label for="note">Ghi Chú:</label>
-                <textarea th:field="*{note}" id="note" placeholder="Nhập ghi chú"></textarea>
-            </div>
-
-            <div class="full-width">
-                <button type="submit">Lưu</button>
-            </div>
-        </div>
-    </form>
-
-
-</div>
-
-<!-- Footer -->
-<div th:replace="layout/footer :: footer"></div>
-<script src="/js/language-selector.js"></script>
-
-<script th:inline="javascript">
-
-    // Log thông tin employee ra console
-    var employee = /*[[${employee}]]*/ JSON.parse(JSON.stringify([[${employee}]]));
-    console.log('Employee details:', employee);    console.log('Employee:', JSON.stringify(employee, null, 2));
-
-    // Function để xem trước ảnh khi chọn file ảnh mới
-    function previewImage(event) {
-        const imagePreview = document.getElementById('imagePreview');
-
-        // Nếu người dùng chọn một file mới
-        if (event.target.files && event.target.files[0]) {
-            const reader = new FileReader();
-
-            // Khi đọc file hoàn tất, thay đổi src của thẻ img
-            reader.onload = function(e) {
-                imagePreview.src = e.target.result;  // Đặt src là URL của ảnh mới
-            };
-
-            // Đọc file ảnh mới
-            reader.readAsDataURL(event.target.files[0]);
-        }
-    }
-
-    // Ẩn thông báo sau 3 giây khi trang load
-    window.onload = function () {
-        setTimeout(function () {
-            console.log("Đang ẩn thông báo lỗi.");
-            var toastElement = document.getElementById("toast-error");
-            if (toastElement) {
-                toastElement.style.display = "none"; // Ẩn thông báo lỗi
+                // Đọc file ảnh mới
+                reader.readAsDataURL(event.target.files[0]);
             }
-        }, 3000); // 3 giây
-    };
-</script>
+        }
 
-</body>
-</html>
+        // Ẩn thông báo sau 3 giây khi trang load
+        window.onload = function () {
+            setTimeout(function () {
+                console.log("Đang ẩn thông báo lỗi.");
+                var toastElement = document.getElementById("toast-error");
+                if (toastElement) {
+                    toastElement.style.display = "none"; // Ẩn thông báo lỗi
+                }
+            }, 3000); // 3 giây
+        };
+    </script>
+
+    </body>
+    </html>
+

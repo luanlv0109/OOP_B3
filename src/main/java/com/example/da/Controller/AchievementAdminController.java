@@ -1,13 +1,12 @@
 package com.example.da.Controller;
 
-
 import com.example.da.Service.AchievementService;
 import com.example.da.Service.EmployeeService;
-import com.example.da.domain.Achievement;
 import com.example.da.domain.User;
+import com.example.da.dto.AchievementDTO;
 import com.example.da.dto.EmployeeSummaryDTO;
-import jakarta.persistence.EntityResult;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,9 +16,10 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
+import static com.example.da.utils.Constant.*;
+
 @Controller
 @RequestMapping("/admin/achievements")
-
 public class AchievementAdminController {
 
     @Autowired
@@ -28,97 +28,107 @@ public class AchievementAdminController {
     @Autowired
     private EmployeeService employeeService;
 
-    // Hiển thị danh sách thành tích
     @GetMapping("/list")
-    public String viewAchievements(Model model , HttpSession session) {
+    public String viewAchievements(Model model, HttpSession session) {
         User user = (User) session.getAttribute("user");
         if (user == null) {
-            // Redirect to login page if no user is found in session
-            return "redirect:/login";
+            return "redirect:/login"; // Redirect to login page if no user is found in session
         }
         model.addAttribute("achievements", achievementService.getAllAchievements());
         return "achievement/list";
     }
 
-    // Hiển thị form thêm thành tích
     @GetMapping("/add")
     public String showAddForm(Model model) {
-        model.addAttribute("achievement", new Achievement());
+        model.addAttribute("achievement", new AchievementDTO());
         model.addAttribute("employees", employeeService.getAllEmployees());
         return "achievement/add";
     }
 
-    // Xử lý thêm thành tích
     @PostMapping("/add")
-    public String addAchievement(@ModelAttribute("achievement") Achievement achievement,
+    public String addAchievement(@Valid @ModelAttribute("achievement") AchievementDTO achievementDTO,
                                  BindingResult bindingResult,
                                  RedirectAttributes redirectAttributes,
                                  Model model) {
         if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             model.addAttribute("employees", employeeService.getAllEmployees());
-            return "achievement/add";
+            return "achievement/add"; // Return to the add form if there are validation errors
         }
 
-        // Check for duplicates
-        if (!achievementService.saveAchievement(achievement)) {
-            redirectAttributes.addFlashAttribute("errorMessage", "Thành tích đã tồn tại");
-            return "redirect:/admin/achievements/add";
+        try {
+            if (!achievementService.addAchievement(achievementDTO)) {
+                redirectAttributes.addFlashAttribute("errorMessage", ACHIEVEMENT_EXIST_ERROR);
+                return "redirect:/admin/achievements/add"; // Redirect back to add form if achievement already exists
+            }
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/achievements/add"; // Redirect back to add form if an exception occurs
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Thành tích đã được thêm thành công");
+        redirectAttributes.addFlashAttribute("successMessage", ACHIEVEMENT_ADD_SUCCESS);
         return "redirect:/admin/achievements/list";
     }
 
-    // Hiển thị form chỉnh sửa thành tích
     @GetMapping("/edit/{id}")
-    public String showEditForm(@PathVariable Long id, Model model) {
-        Achievement achievement = achievementService.getAchievementById(id);
-        if (achievement == null) {
-            return "redirect:/admin/achievements/list";  // Nếu không tìm thấy thành tích, quay lại danh sách
+    public String showEditForm(@PathVariable Long id, Model model, RedirectAttributes redirectAttributes) {
+        AchievementDTO achievementDTO;
+        try {
+            achievementDTO = achievementService.getAchievementById(id);
+            if (achievementDTO == null) {
+                throw new RuntimeException(ACHIEVEMENT_NOT_FOUND_ERROR);
+            }
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            return "redirect:/admin/achievements/list"; // Redirect to list if achievement not found
         }
-        model.addAttribute("achievement", achievement);
+
+        model.addAttribute("achievement", achievementDTO);
         model.addAttribute("employees", employeeService.getAllEmployees());
         return "achievement/edit";
     }
 
-        // Xử lý cập nhật thành tích
-        @PostMapping("/edit/{id}")
-        public String updateAchievement(@PathVariable Long id,
-                                        @ModelAttribute("achievement") Achievement achievement,
-                                        BindingResult bindingResult,
-                                        RedirectAttributes redirectAttributes,
-                                        Model model) {
-            if (bindingResult.hasErrors()) {
-                model.addAttribute("employees", employeeService.getAllEmployees());
-                return "achievement/edit";
-            }
-
-            achievement.setId(id);
-
-            // Check for duplicates during the update
-            if (!achievementService.saveAchievement(achievement)) {
-                redirectAttributes.addFlashAttribute("errorMessage", "Thành tích đã tồn tại");
-                return "redirect:/admin/achievements/edit/" + id;
-            }
-
-            redirectAttributes.addFlashAttribute("successMessage", "Thành tích đã được cập nhật thành công");
-            return "redirect:/admin/achievements/list";
+    @PostMapping("/edit/{id}")
+    public String updateAchievement(@Valid @PathVariable Long id,
+                                    @ModelAttribute("achievement") AchievementDTO achievementDto,
+                                    BindingResult bindingResult,
+                                    RedirectAttributes redirectAttributes,
+                                    Model model) {
+        if (bindingResult.hasErrors()) {
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
+            model.addAttribute("employees", employeeService.getAllEmployees());
+            return "achievement/edit"; // Return to the edit form if there are validation errors
         }
 
-    // Xử lý xóa thành tích
-    @GetMapping("/delete/{id}")
-    public String deleteAchievement(@PathVariable Long id, RedirectAttributes redirectAttributes) {
-        achievementService.deleteAchievement(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Thành tích đã được xóa thành công");
+        try {
+            achievementDto.setId(id);
+            if (!achievementService.updateAchievement(achievementDto)) {
+                redirectAttributes.addFlashAttribute("errorMessage", ACHIEVEMENT_EXIST_ERROR);
+                return "redirect:/admin/achievements/edit/" + id; // Redirect back to edit form if achievement already exists
+            }
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("employees", employeeService.getAllEmployees());
+            return "achievement/edit"; // Return to edit form if an exception occurs
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", ACHIEVEMENT_UPDATE_SUCCESS);
         return "redirect:/admin/achievements/list";
     }
 
-    // Hiển thị tổng hợp thành tích nhân viên
+    @GetMapping("/delete/{id}")
+    public String deleteAchievement(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        achievementService.deleteAchievement(id);
+        redirectAttributes.addFlashAttribute("successMessage", ACHIEVEMENT_DELETE_SUCCESS);
+        return "redirect:/admin/achievements/list";
+    }
+
     @GetMapping("/summary")
     public String showEmployeeAchievements(Model model) {
         List<EmployeeSummaryDTO> employeeSummaries = achievementService.getEmployeeAchievementSummary();
         model.addAttribute("employeeSummaries", employeeSummaries);
         return "summary/employeeAchievementSummary";
     }
-
 }

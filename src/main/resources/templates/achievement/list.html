@@ -84,7 +84,7 @@
     </script>
 </div>
 <!-- Header -->
-<div th:replace="layout/header :: header('Quản lý Thành tích của Admin')"></div>
+<div th:replace="layout/header :: header(#{admin.manageAchievementsHeader})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
@@ -97,36 +97,38 @@
     </div>
 
 
-    <h2>Danh Sách Thành Tích</h2>
-    <a th:href="@{/admin/achievements/add}" style="color: green;">Thêm Thành Tích</a>
+
+    <h2 th:text="#{admin.achievementList}"> </h2>
+    <a th:href="@{/admin/achievements/add}" th:text="#{button.addAchievement}" style="color: green;">Thêm Thành Tích</a>
+
     <table>
         <thead>
         <tr>
-            <th>ID</th>
-            <th>Nhân Viên</th>
-            <th>Loại</th>
-            <th>Lý Do</th>
-            <th>Ngày</th>
-            <th>Hành Động</th>
+            <th th:text="#{label.id}">ID</th>
+            <th th:text="#{label.employee}">Nhân Viên</th>
+            <th th:text="#{label.type}">Loại</th>
+            <th th:text="#{label.reason}">Lý Do</th>
+            <th th:text="#{label.date}">Ngày</th>
+            <th th:text="#{label.action}">Hành Động</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="achievement,iterStat : ${achievements}">
             <td th:text="${iterStat.count}"></td> <!-- Số thứ tự -->
-            <td th:text="${achievement.employee.name}"></td>
+            <td th:text="${achievement.employeeName}"></td>
             <td>
-                <span th:if="${achievement.type == 0}" th:text="'Kỷ luật'"></span>
-                <span th:if="${achievement.type == 1}" th:text="'Khen thưởng'"></span>
-            </td>            <td th:text="${achievement.reason}"></td>
+                <span th:if="${achievement.type == 0}" th:text="#{label.punishment}">Kỷ luật</span>
+                <span th:if="${achievement.type == 1}" th:text="#{label.reward}">Khen thưởng</span>
+            </td>
+            <td th:text="${achievement.reason}"></td>
             <td th:text="${achievement.date}"></td>
             <td>
-                <a th:href="@{/admin/achievements/edit/{id}(id=${achievement.id})}">Sửa</a> |
-                <a th:href="@{/admin/achievements/delete/{id}(id=${achievement.id})}" style="color: red;">Xóa</a>
+                <a th:href="@{/admin/achievements/edit/{id}(id=${achievement.id})}" th:text="#{button.edit}">Sửa</a> |
+                <a th:href="@{/admin/achievements/delete/{id}(id=${achievement.id})}" style="color: red;" th:text="#{button.delete}">Xóa</a>
             </td>
         </tr>
         </tbody>
     </table>
-
 </div>
 
 <!-- Footer -->

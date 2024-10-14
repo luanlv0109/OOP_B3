@@ -28,16 +28,16 @@
 </div>
 
 <!-- Header -->
-<div th:replace="layout/header :: header('Quản lý Admin')"></div>
+<div th:replace="layout/header :: header(#{admin.headerAdmin})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 
 <!-- Nội dung chính của trang -->
 <div class="main-content">
-  <h2>Chào mừng Admin</h2>
-  <p>Đây là trang quản trị dành cho Admin.</p>
-  <a th:href="@{/logout}">Đăng xuất</a>
+  <h2>[[#{admin.welcome}]]</h2> <!-- Sử dụng cú pháp động từ file properties -->
+  <p>[[#{admin.page}]]</p> <!-- Sử dụng cú pháp động từ file properties -->
+  <a th:href="@{/logout}" style="color: #ff4d4d;">[[#{logout}]]</a> <!-- Sử dụng chuỗi từ file properties -->
 </div>
 
 <!-- Footer -->

@@ -6,57 +6,56 @@
         body {
             font-family: Arial, sans-serif;
         }
-
         .main-content {
-            position: relative;
             margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
-            padding: 40px;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            height: 70vh;
-            background-color: #ffffff;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         table, th, td {
             border: 1px solid #ddd;
         }
-
         th, td {
             padding: 8px;
             text-align: left;
         }
-
         th {
             background-color: #f4f4f4;
         }
-
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-
         tr:hover {
             background-color: #f1f1f1;
         }
-
         a {
             color: blue;
             text-decoration: none;
         }
-
         a:hover {
             text-decoration: underline;
         }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            background-color: #fff;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
 
-        input[type="text"], input[type="number"] {
+        .col-6 {
+            width: calc(50% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+            box-sizing: border-box;
+        }
+
+        input[type="text"], input[type="number"],
+        input[type="email"], input[type="date"],
+        .main-content > select, textarea{
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -66,8 +65,14 @@
             font-size: 14px;
         }
 
-        input.error {
-            border: 1px solid red;
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .full-width{
+            width: calc(100% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+            box-sizing: border-box;
         }
 
         button {
@@ -101,10 +106,18 @@
         }
     </style>
 
+
 </head>
 <body>
+<div th:if="${session.user == null}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/login}]]*/ '/login';
+        /*]]>*/
+    </script>
+</div>
 <!-- Header -->
-<div th:replace="layout/header :: header('Chỉnh sửa thông tin Phòng ban của Admin')"></div>
+<div th:replace="layout/header :: header(#{admin.addDepartmentHeader})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
@@ -117,16 +130,17 @@
     </div>
 
 
-    <h2>Thêm Phòng Ban</h2>
-    <form th:action="@{/admin/departments/add}" th:object="${department}" method="post">
-        <label for="code">Mã Phòng Ban</label>
-        <input type="text" id="code" th:field="*{code}" required>
+    <h2 th:text="#{admin.addDepartment}"></h2>
+    <form th:action="@{/admin/departments/add}" th:object="${departmentDTO}" method="post">
+        <label for="code">Department Code</label>
+        <input type="text" id="code" th:field="*{code}" required maxlength="50">
 
-        <label for="name">Tên Phòng Ban</label>
-        <input type="text" id="name" th:field="*{name}" required>
+        <label for="name">Department Name</label>
+        <input type="text" id="name" th:field="*{name}" required maxlength="50">
 
-        <button type="submit">Lưu</button>
+        <button type="submit">Save</button>
     </form>
+
 </div>
 
 <!-- Footer -->

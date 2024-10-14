@@ -84,45 +84,46 @@
     </script>
 </div>
 <!-- Header -->
-<div th:replace="layout/header :: header('Quản lý Phòng ban của Admin')"></div>
+<div th:replace="layout/header :: header(#{admin.manageDepartmentsHeader})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 
-<!-- Nội dung chính của trang -->
-<div class="main-content">
 
-    <div  id="toasts"  >
-      <span th:text="${successMessage}"></span>
+    <!-- Nội dung chính của trang -->
+    <div class="main-content">
+
+        <div id="toasts">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <h2 th:text="#{admin.departmentList}"></h2>
+        <a th:href="@{/admin/departments/add}" style="color: green;" th:text="#{button.addDepartment}"></a>
+
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{label.serialNumber}"></th>
+                <th th:text="#{label.departmentCode}"></th>
+                <th th:text="#{label.departmentName}"></th>
+                <th th:text="#{label.action}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="department, iterStat : ${departments}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${department.code}"></td>
+                <td th:text="${department.name}"></td>
+                <td>
+                    <a th:href="@{/admin/departments/edit/{id}(id=${department.id})}">Edit</a> |
+                    <a th:href="@{/admin/departments/delete/{id}(id=${department.id})}" style="color: red;">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
-<!--    </div>-->
-    <h2>Danh sách Phòng Ban</h2>
-    <a th:href="@{/admin/departments/add}" style="color: green;">Thêm Phòng Ban</a>
-    <table>
-        <thead>
-        <tr>
-            <th>STT</th>
-            <th>Mã Phòng Ban</th>
-            <th>Tên Phòng Ban</th>
-            <th>Hành Động</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="department, iterStat : ${departments}">
-            <td th:text="${iterStat.count}"></td> <!-- Số thứ tự -->
-            <td th:text="${department.code}"></td>
-            <td th:text="${department.name}"></td>
-            <td>
-                <a th:href="@{/admin/departments/edit/{id}(id=${department.id})}">Sửa</a> |
-                <a th:href="@{/admin/departments/delete/{id}(id=${department.id})}" style="color: red;">Xóa</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- Footer -->
+    <!-- Footer -->
 <div th:replace="layout/footer :: footer"></div>
 
 

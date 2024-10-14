@@ -17,8 +17,7 @@ import java.util.UUID;
 @Slf4j
 @Service
 public class FilesStorageServiceImpl implements FilesStorageService {
-    private final   Path root = Paths.get("./uploads");
-
+    private final Path root = Paths.get("./uploads");
 
     @Override
     public void init() {
@@ -32,21 +31,22 @@ public class FilesStorageServiceImpl implements FilesStorageService {
     @Override
     public String save(MultipartFile file) throws IOException {
         String originalFilename = file.getOriginalFilename();
-        String filename = UUID.randomUUID().toString() + "_" + originalFilename;  // Tạo tên file duy nhất
+        String filename = UUID.randomUUID().toString() + "_" + originalFilename; // Tạo tên file duy nhất
         Path destinationFile = this.root.resolve(filename).normalize().toAbsolutePath();
 
         // Lưu file mới với tên độc nhất
         Files.copy(file.getInputStream(), destinationFile);
 
-        return destinationFile.getFileName().toString();  // Trả về tên file đã lưu
+        return destinationFile.getFileName().toString(); // Trả về tên file đã lưu
     }
-
 
     @Override
     public Resource load(String filename) throws MalformedURLException {
         Path file = root.resolve(filename);
-        Resource resource = (Resource) new UrlResource(file.toUri());
+        if (!Files.exists(file)) {
+            throw new MalformedURLException("File not found: " + filename);
+        }
+        Resource resource = new UrlResource(file.toUri());
         return resource;
-
     }
 }

@@ -26,11 +26,10 @@ public class MvcConfig implements WebMvcConfigurer {
         return source;
     }
 
-
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver localeResolver = new SessionLocaleResolver();
-        localeResolver.setDefaultLocale(new Locale("vi", "VN")); // Default to Vietnamese
+        localeResolver.setDefaultLocale(new Locale("vi", "VN"));
         return localeResolver;
     }
 

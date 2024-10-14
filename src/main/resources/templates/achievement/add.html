@@ -6,44 +6,35 @@
         body {
             font-family: Arial, sans-serif;
         }
-
         .main-content {
             margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
             padding: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         table, th, td {
             border: 1px solid #ddd;
         }
-
         th, td {
             padding: 8px;
             text-align: left;
         }
-
         th {
             background-color: #f4f4f4;
         }
-
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-
         tr:hover {
             background-color: #f1f1f1;
         }
-
         a {
             color: blue;
             text-decoration: none;
         }
-
         a:hover {
             text-decoration: underline;
         }
@@ -62,8 +53,9 @@
             box-sizing: border-box;
         }
 
-        input[type="text"], input[type="number"],input[type="date"],select ,
-        .select-content, textarea{
+        input[type="text"], input[type="number"],
+        input[type="email"], input[type="date"],
+        .main-content > select, textarea , .select-content{
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -72,6 +64,7 @@
             box-sizing: border-box;
             font-size: 14px;
         }
+
         label {
             display: block;
             margin-bottom: 5px;
@@ -116,7 +109,7 @@
 </head>
 <body>
 <!-- Header -->
-<div th:replace="layout/header :: header('Thêm thành tích của Admin')"></div>
+<div th:replace="layout/header :: header(#{admin.addAchievementHeader})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
@@ -129,41 +122,43 @@
     </div>
 
 
-    <h2>Thêm thành tích</h2>
+    <h2 th:text="#{admin.addAchievement}"></h2>
     <form th:action="@{/admin/achievements/add}" th:object="${achievement}" method="post">
         <div class="grid">
             <div class="col-6">
-                <label for="employee">Nhân Viên:</label>
-                <select class="select-content" th:field="*{employee.id}">
-                    <option value="">Chọn Nhân Viên</option>
+                <label for="employee" th:text="#{label.employee}">Nhân Viên:</label>
+                <select class="select-content" th:field="*{employeeId}">
+                    <option value="" th:text="#{label.selectEmployee}">Chọn Nhân Viên</option>
                     <option th:each="employee : ${employees}" th:value="${employee.id}" th:text="${employee.name}"></option>
                 </select>
             </div>
 
             <div class="col-6">
-                <label for="type">Loại:</label>
+                <label for="type" th:text="#{label.type}">Loại:</label>
                 <select class="select-content" th:field="*{type}" id="type">
-                    <option value="0" th:selected="${achievement.type == 0}">Kỷ luật</option>
-                    <option value="1" th:selected="${achievement.type == 1}">Khen thưởng</option>
+                    <option value="0" th:text="#{label.punishment}" th:selected="${achievement.type == 0}">Kỷ luật</option>
+                    <option value="1" th:text="#{label.reward}" th:selected="${achievement.type == 1}">Khen thưởng</option>
                 </select>
             </div>
 
             <div class="full-width">
-                <label for="reason">Lý Do:</label>
-                <textarea th:field="*{reason}" id="reason" placeholder="Nhập lý do"></textarea>
+                <label for="reason" th:text="#{label.reason}">Lý Do:</label>
+                <textarea th:field="*{reason}" id="reason" th:placeholder="#{placeholder.reason}">Nhập lý do</textarea>
             </div>
 
             <div class="col-6">
-                <label for="date">Ngày:</label>
+                <label for="date" th:text="#{label.date}">Ngày:</label>
                 <input type="date" th:field="*{date}" id="date">
             </div>
 
             <div class="full-width">
-                <button type="submit">Lưu</button>
+                <button type="submit" th:text="#{button.save}">Lưu</button>
             </div>
         </div>
     </form>
 </div>
+
+
 
 <!-- Footer -->
 <div th:replace="layout/footer :: footer"></div>

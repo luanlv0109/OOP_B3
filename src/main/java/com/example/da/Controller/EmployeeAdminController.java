@@ -5,7 +5,10 @@ import com.example.da.Service.EmployeeService;
 import com.example.da.Service.FilesStorageService;
 import com.example.da.domain.Employee;
 import com.example.da.domain.User;
+import com.example.da.dto.EmployeeDTO;
+import com.example.da.utils.Constant;
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,125 +30,110 @@ import java.net.MalformedURLException;
 
 public class EmployeeAdminController {
 
+
     @Autowired
     private EmployeeService employeeService;
+
     @Autowired
     private DepartmentService departmentService;
 
-    @Autowired
-    private FilesStorageService filesStorageService;
-
     // Hiển thị danh sách nhân viên
     @GetMapping("/list")
-    public String viewEmployees(Model model , HttpSession session) {
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            // Redirect to login page if no user is found in session
-            return "redirect:/login";
-        }
+    public String viewEmployees(Model model) {
         model.addAttribute("employees", employeeService.getAllEmployees());
-        return "employee/list";  // Chuyển hướng đến file list.html trong thư mục employee
+        return "employee/list";
     }
 
-    // Hiển thị form thêm nhân viên
-    @GetMapping("/add")
-    public String showAddForm(Model model) {
-        model.addAttribute("employee", new Employee());
-        model.addAttribute("departments", departmentService.getAllDepartments());
-        return "employee/add";  // Chuyển hướng đến file add.html trong thư mục employee
-    }
-
-    // Xử lý thêm nhân viên
     @PostMapping("/add")
-    public String addEmployee(@ModelAttribute("employee") Employee employee,
+    public String addEmployee(@ModelAttribute("employee") @Valid EmployeeDTO employeeDTO,
                               @RequestParam("imageFile") MultipartFile imageFile,
                               BindingResult bindingResult,
                               Model model,
                               RedirectAttributes redirectAttributes) throws IOException {
 
-            String path = filesStorageService.save(imageFile);
-            employee.setImage(path);
-        // Nếu có lỗi, trả về form thêm nhân viên và hiện thông báo lỗi
         if (bindingResult.hasErrors()) {
-            return "employee/add";
-        }
-
-        if (!employeeService.saveEmployee(employee)) {
-            model.addAttribute("errorMessage", "Thông tin mã, email hoặc số điện thoại đã tồn tại");
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             model.addAttribute("departments", departmentService.getAllDepartments());
-            return "employee/add";  // Nếu phát hiện trùng lặp, trả về trang thêm nhân viên
+            return "employee/add"; // Nếu có lỗi, trả về form thêm nhân viên
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Nhân viên đã được thêm thành công");
-        return "redirect:/admin/employees/list"; // Chuyển hướng lại danh sách nhân viên
+        try {
+            if (!employeeService.saveEmployee(employeeDTO , imageFile)) {
+                redirectAttributes.addFlashAttribute("errorMessage", Constant.EMPLOYEE_EXIST_ERROR);
+                model.addAttribute("departments", departmentService.getAllDepartments());
+                return "employee/add"; // Nếu phát hiện trùng lặp, trả về trang thêm nhân viên
+            }
+        } catch (RuntimeException e) {
+            redirectAttributes.addFlashAttribute("errorMessage", e.getMessage());
+            model.addAttribute("departments", departmentService.getAllDepartments());
+            return "employee/add"; // Nếu gặp lỗi, quay lại trang thêm nhân viên
+        }
+
+        redirectAttributes.addFlashAttribute("successMessage", Constant.EMPLOYEE_ADD_SUCCESS);
+        return "redirect:/admin/employees/list";
     }
 
     // Hiển thị form sửa nhân viên
     @GetMapping("/edit/{id}")
     public String showEditForm(@PathVariable Long id, Model model) {
-        Employee employee = employeeService.getEmployeeById(id);
+        EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
 
-        if (employee == null) {
-            return "redirect:/admin/employees/list";  // Nếu không tìm thấy nhân viên, chuyển hướng về danh sách
+        if (employeeDTO == null) {
+            return "redirect:/admin/employees/list";
         }
 
-        log.info("Employee details: {}", employee); // Log chi tiết về employee
-
-        model.addAttribute("employee", employee);
+        model.addAttribute("employee", employeeDTO);
         model.addAttribute("departments", departmentService.getAllDepartments());
-        return "employee/edit";  // Chuyển hướng đến file edit.html trong thư mục employee
+        return "employee/edit";
     }
 
     // Xử lý cập nhật nhân viên
     @PostMapping("/edit/{id}")
     public String updateEmployee(@PathVariable Long id,
-                                 @ModelAttribute("employee") Employee employee,
+                                 @ModelAttribute("employee") @Valid EmployeeDTO employeeDTO,
                                  @RequestParam("imageFile") MultipartFile imageFile,
                                  BindingResult bindingResult,
                                  Model model,
                                  RedirectAttributes redirectAttributes) throws IOException {
 
-
         if (bindingResult.hasErrors()) {
+            model.addAttribute("employee", employeeDTO);
+            model.addAttribute("departments", departmentService.getAllDepartments());
+            String errorMessage = bindingResult.getFieldError().getDefaultMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             return "employee/edit";
         }
-        employee.setId(id);
 
-        if (!employeeService.updateEmployee(employee , imageFile)) {
-            model.addAttribute("errorMessage", "Thông tin mã, email hoặc số điện thoại đã tồn tại");
+        try {
+            if (!employeeService.updateEmployee(id, employeeDTO , imageFile)) {
+                redirectAttributes.addFlashAttribute("errorMessage", Constant.EMPLOYEE_EXIST_ERROR);
+                model.addAttribute("departments", departmentService.getAllDepartments());
+                return "employee/edit"; // Nếu phát hiện trùng lặp, trả về trang chỉnh sửa nhân viên
+            }
+        } catch (RuntimeException e) {
+            String errorMessage = e.getMessage();
+            redirectAttributes.addFlashAttribute("errorMessage", errorMessage);
             model.addAttribute("departments", departmentService.getAllDepartments());
-            return "employee/edit";  // Nếu phát hiện trùng lặp, trả về trang sửa nhân viên
+            return "employee/edit"; // Quay lại trang chỉnh sửa với thông báo lỗi
         }
 
-        redirectAttributes.addFlashAttribute("successMessage", "Nhân viên đã được cập nhật thành công");
-        return "redirect:/admin/employees/list";  // Chuyển hướng lại danh sách nhân viên
+        redirectAttributes.addFlashAttribute("successMessage", Constant.EMPLOYEE_UPDATE_SUCCESS);
+        return "redirect:/admin/employees/list";
     }
 
-    // Xử lý xóa nhân viên
     @GetMapping("/delete/{id}")
     public String deleteEmployee(@PathVariable Long id, RedirectAttributes redirectAttributes) {
         employeeService.deleteEmployee(id);
-        redirectAttributes.addFlashAttribute("successMessage", "Nhân viên đã được xóa thành công");
-        return "redirect:/admin/employees/list";  // Chuyển hướng lại danh sách nhân viên
+        redirectAttributes.addFlashAttribute("successMessage", Constant.EMPLOYEE_DELETE_SUCCESS);
+        return "redirect:/admin/employees/list";
     }
 
-    // Xem chi tiết thông tin nhân viên
     @GetMapping("/detail/{id}")
     public String viewEmployeeDetails(@PathVariable Long id, Model model) {
-        Employee employee = employeeService.getEmployeeById(id);
-        log.info("employee img: {}", employee.getImage());
-        model.addAttribute("employee", employee);
+        EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
+        model.addAttribute("employee", employeeDTO);
         return "employee/detail";
     }
-
-    @GetMapping("/files/{filename}")
-    public ResponseEntity<Resource> getFile(@PathVariable String filename) throws MalformedURLException {
-        log.info("vao dat ");
-        Resource file = filesStorageService.load(filename);
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" +"anh" + "\"")
-                .body(file);
-    }
-
 
 }

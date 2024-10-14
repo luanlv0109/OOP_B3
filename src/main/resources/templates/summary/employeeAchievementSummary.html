@@ -87,36 +87,41 @@
 
 </head>
 <body>
-
+<div th:if="${session.user == null}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/login}]]*/ '/login';
+        /*]]>*/
+    </script>
+</div>
 <!-- Header -->
-<div th:replace="layout/header :: header('Thống kê thành tích của Admin')"></div>
+<div th:replace="layout/header :: header(#{achievement.summaryHeader})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 <div class="main-content">
-    <h2>Tổng hợp thành tích và kỷ luật</h2>
+    <h2 th:text="#{achievement.summaryHeading}">Tổng hợp thành tích và kỷ luật</h2>
     <table border="1">
         <thead>
         <tr>
-            <th>STT</th>
-            <th>Tên Nhân Viên</th>
-            <th>Phòng Ban</th>
-            <th>Hình Ảnh</th>
-            <th>Điểm Thành Tích</th>
-            <th>Điểm Kỷ Luật</th>
-            <th>Tổng Điểm</th>
+            <th th:text="#{label.serialNumber}">STT</th>
+            <th th:text="#{label.employeeName}">Tên Nhân Viên</th>
+            <th th:text="#{label.department}">Phòng Ban</th>
+            <th th:text="#{label.employeeImage}">Hình Ảnh</th>
+            <th th:text="#{label.achievementPoints}">Điểm Thành Tích</th>
+            <th th:text="#{label.disciplinaryPoints}">Điểm Kỷ Luật</th>
+            <th th:text="#{label.totalPoints}">Tổng Điểm</th>
         </tr>
         </thead>
         <tbody>
-        <tr th:each="employee,iterStat : ${employeeSummaries}">
-            <td th:text="${iterStat.count}"></td> <!-- Số thứ tự -->
+        <tr th:each="employee, iterStat : ${employeeSummaries}">
+            <td th:text="${iterStat.count}"></td>
             <td th:text="${employee.employeeName}"></td>
             <td th:text="${employee.departmentName}"></td>
-            <td>            <img th:if="${employee.employeeImage != null}" th:src="@{/admin/employees/files/{filename}(filename=${employee.employeeImage})}" alt="Employee Image" style="height: 80px; width: 80px"/>
-            </td>
-            <td th:text="${employee.totalAchievements}"></td> <!-- Sửa lại tên thuộc tính -->
-            <td th:text="${employee.totalDisciplinary}"></td> <!-- Sửa lại tên thuộc tính -->
-            <td th:text="${employee.finalScore}"></td> <!-- Sửa lại tên thuộc tính -->
+            <td><img th:if="${employee.employeeImage != null}" th:src="@{/admin/employees/files/{filename}(filename=${employee.employeeImage})}" alt="Employee Image" style="height: 80px; width: 80px"/></td>
+            <td th:text="${employee.totalAchievements}"></td>
+            <td th:text="${employee.totalDisciplinary}"></td>
+            <td th:text="${employee.finalScore}"></td>
         </tr>
         </tbody>
     </table>

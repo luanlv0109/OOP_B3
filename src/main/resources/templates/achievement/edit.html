@@ -8,44 +8,35 @@
         body {
             font-family: Arial, sans-serif;
         }
-
         .main-content {
             margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
             padding: 20px;
         }
-
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
         }
-
         table, th, td {
             border: 1px solid #ddd;
         }
-
         th, td {
             padding: 8px;
             text-align: left;
         }
-
         th {
             background-color: #f4f4f4;
         }
-
         tr:nth-child(even) {
             background-color: #f9f9f9;
         }
-
         tr:hover {
             background-color: #f1f1f1;
         }
-
         a {
             color: blue;
             text-decoration: none;
         }
-
         a:hover {
             text-decoration: underline;
         }
@@ -64,8 +55,9 @@
             box-sizing: border-box;
         }
 
-        input[type="text"], input[type="number"],input[type="date"],select ,
-        .select-content , textarea{
+        input[type="text"], input[type="number"],
+        input[type="email"], input[type="date"],
+        .main-content > select, textarea,  .select-content{
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
@@ -117,61 +109,65 @@
     </style>
 </head>
 <body>
-
+<div th:if="${session.user == null}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/login}]]*/ '/login';
+        /*]]>*/
+    </script>
+</div>
 <!-- Header -->
-<div th:replace="layout/header :: header('Chỉnh sửa thông tin thành tích của Admin')"></div>
+<div th:replace="layout/header :: header(#{admin.editAchievementHeader})"></div>
 
 <!-- Sidebar -->
 <div th:replace="layout/sidebar :: sidebar"></div>
 
 <!-- Nội dung chính -->
-<div class="main-content">
-    <div  id="toast-error" >
-        <span th:text="${errorMessage}"></span>
-    </div>
-    <h2>Chỉnh sửa thành tích</h2>
 
-
-    <!-- Form chỉnh sửa phòng ban -->
-
-    <form th:action="@{/admin/achievements/edit/{id}(id=${achievement.id})}" th:object="${achievement}" method="post">
-        <div class="grid">
-            <div class="col-6">
-                <label for="employee">Nhân Viên:</label>
-                <select class="select-content" th:field="*{employee.id}">
-                    <option value="" disabled selected>Chọn Nhân Viên</option>
-                    <option th:each="employee : ${employees}" th:value="${employee.id}" th:text="${employee.name}"></option>
-                </select>
-            </div>
-
-            <div class="col-6">
-                <label for="type">Loại:</label>
-                <select   class="select-content" th:field="*{type}" id="type">
-                    <option value="0" th:selected="${achievement.type == 0}">Kỷ luật</option>
-                    <option value="1" th:selected="${achievement.type == 1}">Khen thưởng</option>
-                </select>
-            </div>
-
-
-            <div class="full-width">
-                <label for="reason">Lý Do:</label>
-                <textarea th:field="*{reason}" id="reason" placeholder="Nhập lý do"></textarea>
-            </div>
-
-            <div class="col-6">
-                <label for="date">Ngày:</label>
-                <input type="date" th:field="*{date}" id="date">
-            </div>
-
-            <div class="full-width">
-                <button type="submit">Lưu</button>
-            </div>
+    <!-- Nội dung chính -->
+    <div class="main-content">
+        <div id="toast-error">
+            <span th:text="${errorMessage}"></span>
         </div>
-    </form>
+        <h2 th:text="#{admin.editAchievement}">Chỉnh sửa thành tích</h2>
 
-</div>
+        <!-- Form chỉnh sửa thành tích -->
+        <form th:action="@{/admin/achievements/edit/{id}(id=${achievement.id})}" th:object="${achievement}" method="post">
+            <div class="grid">
+                <div class="col-6">
+                    <label for="employee" th:text="#{label.employee}">Nhân Viên:</label>
+                    <select class="select-content" th:field="*{employeeId}">
+                        <option value="" disabled selected th:text="#{label.selectEmployee}">Chọn Nhân Viên</option>
+                        <option th:each="employee : ${employees}" th:value="${employee.id}" th:text="${employee.name}"></option>
+                    </select>
+                </div>
 
-<!-- Footer -->
+                <div class="col-6">
+                    <label for="type" th:text="#{label.type}">Loại:</label>
+                    <select class="select-content" th:field="*{type}" id="type">
+                        <option value="0" th:text="#{label.punishment}" th:selected="${achievement.type == 0}">Kỷ luật</option>
+                        <option value="1" th:text="#{label.reward}" th:selected="${achievement.type == 1}">Khen thưởng</option>
+                    </select>
+                </div>
+
+                <div class="full-width">
+                    <label for="reason" th:text="#{label.reason}">Lý Do:</label>
+                    <textarea th:field="*{reason}" id="reason" th:placeholder="#{placeholder.reason}">Nhập lý do</textarea>
+                </div>
+
+                <div class="col-6">
+                    <label for="date" th:text="#{label.date}">Ngày:</label>
+                    <input type="date" th:field="*{date}" id="date">
+                </div>
+
+                <div class="full-width">
+                    <button type="submit" th:text="#{button.save}">Lưu</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- Footer -->
 <div th:replace="layout/footer :: footer"></div>
 <script src="/js/language-selector.js"></script>
 

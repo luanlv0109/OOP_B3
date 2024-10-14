@@ -1,149 +1,150 @@
-<!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý Phòng Ban</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Quản lý Phòng Ban</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
 
-        .main-content {
-            margin-left: 240px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
-            padding: 20px;
-        }
+            .main-content {
+                margin-left: 240px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+                padding: 20px;
+            }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+                border-radius: 10px;
+                overflow: hidden;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            }
 
-        table, th, td {
-            border: none; /* Xóa đường viền mặc định */
-        }
+            table, th, td {
+                border: none; /* Xóa đường viền mặc định */
+            }
 
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
+            th, td {
+                padding: 12px 15px;
+                text-align: left;
+            }
 
-        th {
-            background-color: #0083b0;
-            color: white;
-        }
+            th {
+                background-color: #0083b0;
+                color: white;
+            }
 
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
 
-        tr:nth-child(odd) {
-            background-color: #f2f2f2;
-        }
+            tr:nth-child(odd) {
+                background-color: #f2f2f2;
+            }
 
-        tr:hover {
-            background-color: #e0e0e0;
-        }
+            tr:hover {
+                background-color: #e0e0e0;
+            }
 
-        a {
-            color: #0083b0;
-            text-decoration: none;
-            font-weight: bold;
-        }
+            a {
+                color: #0083b0;
+                text-decoration: none;
+                font-weight: bold;
+            }
 
-        a:hover {
-            text-decoration: underline;
-        }
+            a:hover {
+                text-decoration: underline;
+            }
 
-        #toasts {
-            position: absolute; /* Định vị theo absolute */
-            top: 170px; /* Cách phần trên cùng của trang 20px */
-            right: 20px; /* Cách phần bên phải của trang 20px */
-            background-color: #d4edda; /* Màu nền xanh nhạt */
-            color: #155724; /* Màu chữ xanh đậm */
-            border: 1px solid #c3e6cb; /* Viền */
-            /*padding: 15px; !* Khoảng cách padding *!*/
-            border-radius: 5px; /* Bo góc */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
-            z-index: 1000; /* Đảm bảo toast nằm trên cùng */
-        }
-    </style>
-</head>
-<body>
+            #toasts {
+                position: absolute; /* Định vị theo absolute */
+                top: 170px; /* Cách phần trên cùng của trang 20px */
+                right: 20px; /* Cách phần bên phải của trang 20px */
+                background-color: #d4edda; /* Màu nền xanh nhạt */
+                color: #155724; /* Màu chữ xanh đậm */
+                border: 1px solid #c3e6cb; /* Viền */
+                /*padding: 15px; !* Khoảng cách padding *!*/
+                border-radius: 5px; /* Bo góc */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+                z-index: 1000; /* Đảm bảo toast nằm trên cùng */
+            }
+        </style>
+    </head>
+    <body>
 
-<!-- Redirect to login if user is not logged in -->
-<div th:if="${session.user == null}">
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        window.location.href = /*[[@{/login}]]*/ '/login';
-        /*]]>*/
-    </script>
-</div>
-<!-- Header -->
-<div th:replace="layout/header :: header('Quản lý Nhân viên của Admin')"></div>
+    <!-- Redirect to login if user is not logged in -->
+    <div th:if="${session.user == null}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.location.href = /*[[@{/login}]]*/ '/login';
+            /*]]>*/
+        </script>
+    </div>
+    <!-- Header -->
+    <div th:replace="layout/header :: header(#{employee.managementHeader})"></div>
 
-<!-- Sidebar -->
-<div th:replace="layout/sidebar :: sidebar"></div>
+    <!-- Sidebar -->
+    <div th:replace="layout/sidebar :: sidebar"></div>
 
-<!-- Nội dung chính của trang -->
-<div class="main-content">
+    <!-- Nội dung chính của trang -->
+    <div class="main-content">
 
-    <div  id="toasts"  >
-        <span th:text="${successMessage}"></span>
+        <div id="toasts">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <h2 th:text="#{employee.list}">Danh sách Nhân Viên</h2>
+        <a th:href="@{/admin/employees/add}" style="color: green;" th:text="#{button.addEmployee}">Thêm Nhân Viên</a>
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{label.serialNumber}">STT</th>
+                <th th:text="#{label.employeeCode}">Mã Nhân Viên</th>
+                <th th:text="#{label.employeeName}">Tên Nhân Viên</th>
+                <th th:text="#{label.department}">Phòng Ban</th>
+                <th th:text="#{label.action}">Hành Động</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="employeeDTO, iterStat : ${employees}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${employeeDTO.code}"></td>
+                <td th:text="${employeeDTO.name}"></td>
+                <td th:text="${employeeDTO.departmentName != null ? employeeDTO.departmentName : ''}">
+                    <span th:if="${employeeDTO.departmentName == null}" th:text="#{label.noDepartment}"></span>
+                </td>
+                <td>
+                    <a th:href="@{/admin/employees/edit/{id}(id=${employeeDTO.id})}" th:text="#{button.edit}">Sửa</a> |
+                    <a th:href="@{/admin/employees/delete/{id}(id=${employeeDTO.id})}" style="color: red;" th:text="#{button.delete}">Xóa</a> |
+                    <a th:href="@{/admin/employees/detail/{id}(id=${employeeDTO.id})}" style="color: yellowgreen;" th:text="#{button.viewDetail}">Xem chi tiết</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
     </div>
 
+    <!-- Footer -->
+    <div th:replace="layout/footer :: footer"></div>
+    <script src="/js/language-selector.js"></script>
 
-    <h2>Danh sách Nhân Viên</h2>
-    <a th:href="@{/admin/employees/add}" style="color: green;">Thêm Nhân Viên</a>
-    <table>
-        <thead>
-        <tr>
-            <th>STT</th>
-            <th>Mã Nhân Viên</th>
-            <th>Tên Nhân Viên</th>
-            <th>Phòng Ban</th>
-            <th>Hành Động</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="employee, iterStat : ${employees}">
-            <td th:text="${iterStat.count}"></td>
-            <td th:text="${employee.code}"></td>
-            <td th:text="${employee.name}"></td>
-            <td th:text="${employee.department != null ? employee.department.name : 'Không có phòng ban '}"></td>
-            <td>
-                <a th:href="@{/admin/employees/edit/{id}(id=${employee.id})}">Sửa</a> |
-                <a th:href="@{/admin/employees/delete/{id}(id=${employee.id})}" style="color: red;">Xóa</a>|
-                <a th:href="@{/admin/employees/detail/{id}(id=${employee.id})}" style="color: yellowgreen;">Xem chi tiết</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
-</div>
-
-<!-- Footer -->
-<div th:replace="layout/footer :: footer"></div>
-<script src="/js/language-selector.js"></script>
-
-<script>
-    window.onload = function () {
-        // Đặt thời gian chờ 3 giây (3000 milliseconds)
-        setTimeout(function () {
-            console.log("vao dta")
-            // Lấy phần tử có id là 'toast'á
-            var toastElement = document.getElementById("toasts");
-            console.log(toastElement)
-            // Kiểm tra xem phần tử có tồn tại không
-            if (toastElement) {
-                // Gán display = 'none' để ẩn phần tử
-                toastElement.style.display = "none";
-            }
-        }, 3000); // 3 giây
-    };
-</script>
-</body>
-</html>
+    <script>
+        window.onload = function () {
+            // Đặt thời gian chờ 3 giây (3000 milliseconds)
+            setTimeout(function () {
+                console.log("vao dta")
+                // Lấy phần tử có id là 'toast'á
+                var toastElement = document.getElementById("toasts");
+                console.log(toastElement)
+                // Kiểm tra xem phần tử có tồn tại không
+                if (toastElement) {
+                    // Gán display = 'none' để ẩn phần tử
+                    toastElement.style.display = "none";
+                }
+            }, 3000); // 3 giây
+        };
+    </script>
+    </body>
+    </html>
