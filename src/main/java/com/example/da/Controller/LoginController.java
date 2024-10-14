@@ -2,6 +2,7 @@ package com.example.da.Controller;
 
 import com.example.da.Service.LoginService;
 import com.example.da.domain.User;
+import com.example.da.utils.Constant;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -40,11 +41,10 @@ public class LoginController {
                 return "redirect:/user";  // Nếu là user thường, điều hướng đến trang người dùng
             }
         } else {
-            model.addAttribute("error", "Tên đăng nhập hoặc mật khẩu không chính xác");
+            model.addAttribute("error", Constant.LOGIN_ERROR);
             return "login";  // Nếu đăng nhập không thành công, quay lại trang login
         }
     }
-
 
     @GetMapping("/logout")
     public String logout(HttpSession session) {

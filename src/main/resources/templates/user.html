@@ -1,11 +1,36 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-  <title>User Page</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+
+    .main-content {
+      margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+      padding: 20px;
+    }
+  </style>
 </head>
 <body>
-<h2>Chào mừng bạn, người dùng thường</h2>
-<p>Đây là trang dành cho người dùng.</p>
-<a th:href="@{/logout}">Đăng xuất</a>
+
+<!-- Header -->
+<div th:replace="layout/header :: header('Site User')"></div>
+
+<!-- Sidebar -->
+<div th:replace="layout/sidebar :: sidebar"></div>
+
+<!-- Nội dung chính của trang -->
+<div class="main-content">
+  <h2>Chào mừng [[${session.user.username}]]</h2>
+  <a th:href="@{/logout}">Đăng xuất</a>
+</div>
+
+<!-- Footer -->
+<div th:replace="layout/footer :: footer"></div>
+
 </body>
 </html>
