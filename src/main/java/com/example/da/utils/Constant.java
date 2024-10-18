@@ -32,6 +32,11 @@ public class Constant {
     public static final String LOGIN_ERROR = "Tên đăng nhập hoặc mật khẩu không chính xác";
     public static final String USER_NOT_FOUND_ERROR = "Người dùng không tồn tại";
 
-
+    // Thông báo cho SearchKeyword
+    public static final String KEYWORD_ADD_SUCCESS = "Từ khóa đã được thêm thành công";
+    public static final String KEYWORD_UPDATE_SUCCESS = "Từ khóa đã được cập nhật thành công";
+    public static final String KEYWORD_DELETE_SUCCESS = "Từ khóa đã được xóa thành công";
+    public static final String KEYWORD_EXIST_ERROR = "Từ khóa đã tồn tại";
+    public static final String KEYWORD_NOT_FOUND_ERROR = "Không tìm thấy từ khóa";
 
 }

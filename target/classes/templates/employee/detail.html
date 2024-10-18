@@ -1,0 +1,261 @@
+    <!DOCTYPE html>
+    <html xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <title>Thêm Phòng Ban</title>
+        <style>
+            body {
+                font-family: Arial, sans-serif;
+            }
+
+            .main-content {
+                margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+                padding: 20px;
+            }
+
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                margin-top: 20px;
+            }
+
+            table, th, td {
+                border: 1px solid #ddd;
+            }
+
+            th, td {
+                padding: 8px;
+                text-align: left;
+            }
+
+            th {
+                background-color: #f4f4f4;
+            }
+
+            tr:nth-child(even) {
+                background-color: #f9f9f9;
+            }
+
+            tr:hover {
+                background-color: #f1f1f1;
+            }
+
+            a {
+                color: blue;
+                text-decoration: none;
+            }
+
+            a:hover {
+                text-decoration: underline;
+            }
+
+            .grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 20px;
+                background-color: #fff;
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 8px;
+            }
+
+            .col-6 {
+                width: calc(50% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+                box-sizing: border-box;
+            }
+
+            input[type="text"], input[type="number"] {
+                width: 100%;
+                padding: 10px;
+                margin-bottom: 10px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                box-sizing: border-box;
+                font-size: 14px;
+            }
+
+            label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+            }
+
+            .full-width {
+                width: calc(100% - 10px); /* 50% width trừ khoảng cách giữa các cột */
+                box-sizing: border-box;
+            }
+
+            button {
+                width: 100%;
+                padding: 12px;
+                background-color: #0083b0;
+                color: white;
+                border: none;
+                border-radius: 4px;
+                font-size: 16px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
+            }
+
+            button:hover {
+                background-color: #00729a;
+            }
+
+            #toast-error {
+                position: absolute; /* Định vị theo absolute */
+                top: 70px; /* Cách phần trên cùng của trang 170px */
+                right: 20px; /* Cách phần bên phải của trang 20px */
+                background-color: #f8d7da; /* Màu nền đỏ nhạt (thể hiện lỗi) */
+                color: #721c24; /* Màu chữ đỏ đậm */
+                border: 1px solid #f5c6cb; /* Viền đỏ nhạt */
+                padding: 15px; /* Khoảng cách padding */
+                border-radius: 5px; /* Bo góc */
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+                z-index: 1000; /* Đảm bảo toast nằm trên cùng */
+                font-size: 14px; /* Kích thước font chữ */
+            }
+            h1 {
+                text-align: center;
+                color: #007bff;
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+
+            p {
+                font-size: 16px;
+                margin-bottom: 12px;
+                line-height: 1.6;
+            }
+
+            p strong {
+                color: #555;
+            }
+
+            .employee-details {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-top: 20px;
+            }
+
+            .employee-info {
+                flex: 2;
+            }
+
+            .employee-image {
+                flex: 1;
+                text-align: center;
+            }
+
+            .employee-image img {
+                border-radius: 8px;
+                border: 2px solid #ddd;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 100%;
+                height: auto;
+            }
+
+            a:hover {
+                background-color: #0056b3;
+            }
+            h1 {
+                text-align: center;
+                color: #007bff;
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+
+            p {
+                font-size: 16px;
+                margin-bottom: 12px;
+                line-height: 1.6;
+            }
+
+            p strong {
+                color: #555;
+            }
+
+            .employee-details {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-top: 20px;
+            }
+
+            .employee-info {
+                flex: 2;
+            }
+
+            .employee-image {
+                flex: 1;
+                text-align: center;
+            }
+            .employee-image img {
+                border-radius: 8px;
+                border: 2px solid #ddd;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+                max-width: 100%;
+                height: auto;
+            }
+            a:hover {
+                background-color: #0056b3;
+            }
+        </style>
+
+    </head>
+    <body>
+    <div th:if="${session.user == null}">
+        <script th:inline="javascript">
+            /*<![CDATA[*/
+            window.location.href = /*[[@{/login}]]*/ '/login';
+            /*]]>*/
+        </script>
+    </div>
+    <!-- Header -->
+    <div th:replace="layout/header :: header(#{employee.detailsHeader})"></div>
+
+    <!-- Sidebar -->
+    <div th:replace="layout/sidebar :: sidebar"></div>
+
+    <div class="main-content">
+
+
+        <div  id="toast-error" >
+            <span th:text="${errorMessage}"></span>
+        </div>
+
+
+        <h1 th:text="#{employee.detailsTitle}">Chi tiết Nhân Viên</h1>
+
+        <div class="employee-details">
+            <!-- Thông tin nhân viên -->
+            <div class="employee-info">
+                <p><strong th:text="#{label.employeeCode}">Mã nhân viên:</strong> <span th:text="${employeeDTO.code}"></span></p>
+                <p><strong th:text="#{label.employeeName}">Tên nhân viên:</strong> <span th:text="${employeeDTO.name}"></span></p>
+                <p><strong th:text="#{label.employeeEmail}">Email:</strong> <span th:text="${employeeDTO.email}"></span></p>
+                <p><strong th:text="#{label.employeeGender}">Giới tính:</strong> <span th:text="${employeeDTO.gender}"></span></p>
+                <p><strong th:text="#{label.employeeSalary}">Lương:</strong> <span th:text="${employeeDTO.salary}"></span></p>
+                <p><strong th:text="#{label.employeeLevel}">Cấp độ:</strong> <span th:text="${employeeDTO.level}"></span></p>
+                <p><strong th:text="#{label.employeeDob}">Ngày sinh:</strong> <span th:text="${employeeDTO.dob}"></span></p>
+                <p><strong th:text="#{label.employeeDepartment}">Phòng ban:</strong> <span th:text="${employeeDTO.departmentName != null ? employeeDTO.departmentName : '#{label.noDepartment}'}"></span></p>
+            </div>
+
+            <!-- Hình ảnh nhân viên -->
+            <div class="employee-image">
+                <img th:if="${employeeDTO.image != null}" th:src="@{/admin/employees/files/{filename}(filename=${employeeDTO.image})}" alt="Employee Image"/>
+                <p th:if="${employeeDTO.image == null}" th:text="#{label.noImage}">Không có ảnh</p>
+            </div>
+        </div>
+
+        <a th:href="@{/admin/employees/list}" th:text="#{button.backToList}">Quay lại danh sách</a>
+    </div>
+
+    <!-- Footer -->
+    <div th:replace="layout/footer :: footer"></div>
+    <script src="/js/language-selector.js"></script>
+
+    <script>
+
+
+    </script>
+    </body>
+    </html>

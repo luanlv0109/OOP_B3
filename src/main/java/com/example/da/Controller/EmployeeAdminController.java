@@ -9,6 +9,7 @@ import com.example.da.dto.EmployeeDTO;
 import com.example.da.utils.Constant;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.core.io.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +24,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Files;
 
 @Slf4j
 @Controller
@@ -36,6 +38,8 @@ public class EmployeeAdminController {
 
     @Autowired
     private DepartmentService departmentService;
+    @Autowired
+    private FilesStorageService filesStorageService;
 
     // Hiển thị danh sách nhân viên
     @GetMapping("/list")
@@ -43,7 +47,17 @@ public class EmployeeAdminController {
         model.addAttribute("employees", employeeService.getAllEmployees());
         return "employee/list";
     }
+    @GetMapping("/add")
+    public String showAddForm(Model model) {
+        // Tạo một đối tượng EmployeeDTO rỗng để liên kết với form
+        model.addAttribute("employee", new EmployeeDTO());
 
+        // Lấy danh sách các phòng ban để hiển thị trong form
+        model.addAttribute("departments", departmentService.getAllDepartments());
+
+        // Trả về view "employee/add" để hiển thị form thêm nhân viên
+        return "employee/add";
+    }
     @PostMapping("/add")
     public String addEmployee(@ModelAttribute("employee") @Valid EmployeeDTO employeeDTO,
                               @RequestParam("imageFile") MultipartFile imageFile,
@@ -129,10 +143,36 @@ public class EmployeeAdminController {
         return "redirect:/admin/employees/list";
     }
 
+    @GetMapping("/files/{filename}")
+    @ResponseBody
+    public ResponseEntity<Resource> getFile(@PathVariable String filename) {
+        try {
+            Resource file = filesStorageService.load(filename);
+
+            // Lấy loại nội dung của tệp
+            String contentType = Files.probeContentType(file.getFile().toPath());
+
+            // Nếu không xác định được loại nội dung, mặc định là "application/octet-stream"
+            if (contentType == null) {
+                contentType = "application/octet-stream";
+            }
+
+            return ResponseEntity.ok()
+                    .contentType(org.springframework.http.MediaType.parseMediaType(contentType))
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + file.getFilename() + "\"") // Thay "attachment" bằng "inline"
+                    .body(file);
+        } catch (IOException e) {
+            log.error("Error loading file: {}", e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+    }
+
+
+
     @GetMapping("/detail/{id}")
     public String viewEmployeeDetails(@PathVariable Long id, Model model) {
         EmployeeDTO employeeDTO = employeeService.getEmployeeById(id);
-        model.addAttribute("employee", employeeDTO);
+        model.addAttribute("employeeDTO", employeeDTO);
         return "employee/detail";
     }
 

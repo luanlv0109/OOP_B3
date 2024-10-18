@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý Phòng Ban</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .main-content {
+            margin-left: 240px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+            padding: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        table, th, td {
+            border: none; /* Xóa đường viền mặc định */
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0083b0;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #e0e0e0;
+        }
+
+        a {
+            color: #0083b0;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        #toasts {
+            position: absolute; /* Định vị theo absolute */
+            top: 170px; /* Cách phần trên cùng của trang 20px */
+            right: 20px; /* Cách phần bên phải của trang 20px */
+            background-color: #d4edda; /* Màu nền xanh nhạt */
+            color: #155724; /* Màu chữ xanh đậm */
+            border: 1px solid #c3e6cb; /* Viền */
+            /*padding: 15px; !* Khoảng cách padding *!*/
+            border-radius: 5px; /* Bo góc */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
+            z-index: 1000; /* Đảm bảo toast nằm trên cùng */
+        }
+    </style>
+</head>
+<body>
+
+<!-- Redirect to login if user is not logged in -->
+<div th:if="${session.user == null}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/login}]]*/ '/login';
+        /*]]>*/
+    </script>
+</div>
+<!-- Header -->
+<div th:replace="layout/header :: header(#{admin.manageDepartmentsHeader})"></div>
+
+<!-- Sidebar -->
+<div th:replace="layout/sidebar :: sidebar"></div>
+
+
+    <!-- Nội dung chính của trang -->
+    <div class="main-content">
+
+        <div id="toasts">
+            <span th:text="${successMessage}"></span>
+        </div>
+
+        <h2 th:text="#{admin.departmentList}"></h2>
+        <a th:href="@{/admin/departments/add}" style="color: green;" th:text="#{button.addDepartment}"></a>
+
+        <table>
+            <thead>
+            <tr>
+                <th th:text="#{label.serialNumber}"></th>
+                <th th:text="#{label.departmentCode}"></th>
+                <th th:text="#{label.departmentName}"></th>
+                <th th:text="#{label.action}"></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="department, iterStat : ${departments}">
+                <td th:text="${iterStat.count}"></td>
+                <td th:text="${department.code}"></td>
+                <td th:text="${department.name}"></td>
+                <td>
+                    <a th:href="@{/admin/departments/edit/{id}(id=${department.id})}">Edit</a> |
+                    <a th:href="@{/admin/departments/delete/{id}(id=${department.id})}" style="color: red;">Delete</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Footer -->
+<div th:replace="layout/footer :: footer"></div>
+
+
+<script src="/js/language-selector.js"></script>
+
+<script>
+
+    window.onload = function () {
+        // Đặt thời gian chờ 3 giây (3000 milliseconds)
+        setTimeout(function () {
+            console.log("vao dta")
+            // Lấy phần tử có id là 'toast'á
+            var toastElement = document.getElementById("toasts");
+            console.log(toastElement)
+            // Kiểm tra xem phần tử có tồn tại không
+            if (toastElement) {
+                // Gán display = 'none' để ẩn phần tử
+                toastElement.style.display = "none";
+            }
+        }, 3000); // 3 giây
+    };
+</script>
+
+</body>
+</html>

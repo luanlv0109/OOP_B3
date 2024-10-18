@@ -30,6 +30,7 @@ public class FilesStorageServiceImpl implements FilesStorageService {
 
     @Override
     public String save(MultipartFile file) throws IOException {
+
         String originalFilename = file.getOriginalFilename();
         String filename = UUID.randomUUID().toString() + "_" + originalFilename; // Tạo tên file duy nhất
         Path destinationFile = this.root.resolve(filename).normalize().toAbsolutePath();

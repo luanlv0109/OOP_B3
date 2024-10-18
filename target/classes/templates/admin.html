@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Page</title>
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
+
+    .main-content {
+      margin-left: 220px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Redirect to login if user is not logged in -->
+<div th:if="${session.user == null}">
+  <script th:inline="javascript">
+    /*<![CDATA[*/
+    window.location.href = /*[[@{/login}]]*/ '/login';
+    /*]]>*/
+  </script>
+</div>
+
+<!-- Header -->
+<div th:replace="layout/header :: header(#{admin.headerAdmin})"></div>
+
+<!-- Sidebar -->
+<div th:replace="layout/sidebar :: sidebar"></div>
+
+<!-- Nội dung chính của trang -->
+<div class="main-content">
+  <h2>[[#{admin.welcome}]]</h2> <!-- Sử dụng cú pháp động từ file properties -->
+  <p>[[#{admin.page}]]</p> <!-- Sử dụng cú pháp động từ file properties -->
+  <a th:href="@{/logout}" style="color: #ff4d4d;">[[#{logout}]]</a> <!-- Sử dụng chuỗi từ file properties -->
+</div>
+
+<!-- Footer -->
+<div th:replace="layout/footer :: footer"></div>
+<script src="/js/language-selector.js"></script>
+
+
+</body>
+</html>
