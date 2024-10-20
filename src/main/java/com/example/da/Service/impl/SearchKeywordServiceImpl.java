@@ -17,17 +17,14 @@ public class SearchKeywordServiceImpl implements SearchKeywordService {
 
     @Override
     public boolean addKeyword(SearchKeywordDTO searchKeywordDTO) {
-        // Kiểm tra xem từ khóa đã tồn tại hay chưa (có thể kiểm tra theo tên từ khóa hoặc gợi ý mong muốn)
         Optional<SearchKeyword> existingKeyword = searchKeywordRepository.findByKeywordAndDesiredSuggestion(
                 searchKeywordDTO.getKeyword(), searchKeywordDTO.getDesiredSuggestion()
         );
 
-        // Nếu từ khóa đã tồn tại, trả về false
         if (existingKeyword.isPresent()) {
             return false;
         }
 
-        // Nếu chưa tồn tại, tạo mới một SearchKeyword và lưu vào cơ sở dữ liệu
         SearchKeyword searchKeyword = new SearchKeyword();
         searchKeyword.setKeyword(searchKeywordDTO.getKeyword());
         searchKeyword.setDesiredSuggestion(searchKeywordDTO.getDesiredSuggestion());
@@ -38,7 +35,6 @@ public class SearchKeywordServiceImpl implements SearchKeywordService {
         searchKeyword.setTimesPerMonth(searchKeywordDTO.getTimesPerMonth());
         searchKeyword.setCreatedAt(LocalDate.now());  // Gán ngày tạo hiện tại
 
-        // Lưu từ khóa vào cơ sở dữ liệu
         searchKeywordRepository.save(searchKeyword);
 
         return true;

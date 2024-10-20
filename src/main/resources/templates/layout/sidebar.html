@@ -7,7 +7,15 @@
 </head>
 <body>
 <div th:fragment="sidebar">
-  <div class="sidebar" style="width: 220px; background: linear-gradient(to bottom, #00b4db, #0083b0); color: white; position: fixed; height: 100%; padding-top: 20px;">
+  <div class="sidebar" style="left: 0;
+    top: 70px;
+    width: 220px;
+    background: linear-gradient(to bottom, #00b4db, #0083b0);
+    color: white;
+    position: fixed;
+    height: 100%;
+    padding-top: 40px;
+    z-index: 10;">
     <h3 style="text-align: center; color: white;">Menu</h3>
     <ul style="list-style-type: none; padding-left: 10px;">
 
@@ -41,7 +49,7 @@
         <a th:href="@{/admin/keywords/add(lang=${#locale.language})}" style="color: white;">[[#{menu.keyword.add}]]</a>
       </li>
       <li th:if="${session.user.isAdmin()}" style="color: white; padding: 10px; display: block;">
-        <a th:href="@{/admin/search-result/get-search-results(month=10, year=2024, lang=${#locale.language})}" style="color: white;">Kết quả</a>
+        <a th:href="@{/admin/search-result/list(month=10, year=2024, lang=${#locale.language})}" style="color: white;">[[#{menu.result}]]</a>
       </li>
       <!-- Logout -->
       <li><a th:href="@{/logout}" style="color: #ff4d4d; padding: 10px; display: block;">[[#{logout}]]</a></li>

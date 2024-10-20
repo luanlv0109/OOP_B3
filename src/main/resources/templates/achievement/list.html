@@ -4,74 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý Phòng Ban</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-
-        .main-content {
-            margin-left: 240px; /* Đẩy nội dung chính ra bên phải, chừa chỗ cho sidebar */
-            padding: 20px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-            border-radius: 10px;
-            overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        table, th, td {
-            border: none; /* Xóa đường viền mặc định */
-        }
-
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-        }
-
-        th {
-            background-color: #0083b0;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        tr:nth-child(odd) {
-            background-color: #f2f2f2;
-        }
-
-        tr:hover {
-            background-color: #e0e0e0;
-        }
-
-        a {
-            color: #0083b0;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        a:hover {
-            text-decoration: underline;
-        }
-
-        #toasts {
-            position: absolute; /* Định vị theo absolute */
-            top: 170px; /* Cách phần trên cùng của trang 20px */
-            right: 20px; /* Cách phần bên phải của trang 20px */
-            background-color: #d4edda; /* Màu nền xanh nhạt */
-            color: #155724; /* Màu chữ xanh đậm */
-            border: 1px solid #c3e6cb; /* Viền */
-            /*padding: 15px; !* Khoảng cách padding *!*/
-            border-radius: 5px; /* Bo góc */
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Hiệu ứng đổ bóng */
-            z-index: 1000; /* Đảm bảo toast nằm trên cùng */
-        }
-    </style>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Linked external CSS -->
 </head>
 <body>
 
@@ -83,6 +16,7 @@
         /*]]>*/
     </script>
 </div>
+
 <!-- Header -->
 <div th:replace="layout/header :: header(#{admin.manageAchievementsHeader})"></div>
 
@@ -91,11 +25,10 @@
 
 <!-- Nội dung chính của trang -->
 <div class="main-content">
-    <!--     Toast Notification-->
+    <!-- Toast Notification -->
     <div id="toasts">
         <span th:text="${successMessage}"></span>
     </div>
-
 
     <h2 th:text="#{admin.achievementList}"></h2>
     <a th:href="@{/admin/achievements/add}" th:text="#{button.addAchievement}" style="color: green;">Thêm Thành Tích</a>
@@ -112,28 +45,20 @@
         </tr>
         </thead>
         <tbody>
-
-        <!-- Iterate over each day of the month -->
-        <td th:each="day : ${#numbers.sequence(1, 31)}">
-            <!-- Nếu có gợi ý và gợi ý không null -->
-            <div th:if="${entry.data[day - 1].suggestion != null}" th:style="'width: 200px;'">
-
-                <!-- Lặp qua từng hình ảnh (img) trong danh sách -->
-                <div th:each="img : ${entry.data[day - 1].img}">
-                    <!-- Hiển thị hình ảnh -->
-                    <img th:src="@{/admin/employees/files/{filename}(filename=${img})}" alt="Image" style="width: 50px; height: auto;" />
-                </div>
-
-                <!-- Hiển thị suggestion -->
-                <span th:utext="${entry.data[day - 1].suggestion}"></span>
-            </div>
-
-            <!-- Trường hợp không có gợi ý -->
-            <div th:if="${entry.data[day - 1].suggestion == null}" th:style="'width: 20px;'">
-                <!-- Cell trống cho dữ liệu thiếu -->
-            </div>
-        </td>
-
+        <tr th:each="achievement,iterStat : ${achievements}">
+            <td th:text="${iterStat.count}"></td> <!-- Số thứ tự -->
+            <td th:text="${achievement.employeeName}"></td>
+            <td>
+                <span th:if="${achievement.type == 0}" th:text="#{label.punishment}">Kỷ luật</span>
+                <span th:if="${achievement.type == 1}" th:text="#{label.reward}">Khen thưởng</span>
+            </td>
+            <td th:text="${achievement.reason}"></td>
+            <td th:text="${achievement.date}"></td>
+            <td>
+                <a th:href="@{/admin/achievements/edit/{id}(id=${achievement.id})}" th:text="#{button.edit}">Sửa</a> |
+                <a th:href="@{/admin/achievements/delete/{id}(id=${achievement.id})}" style="color: red;" th:text="#{button.delete}">Xóa</a>
+            </td>
+        </tr>
         </tbody>
     </table>
 </div>
@@ -141,22 +66,7 @@
 <!-- Footer -->
 <div th:replace="layout/footer :: footer"></div>
 <script src="/js/language-selector.js"></script>
+<script src="/js/main.js"></script> <!-- Linked external JS -->
 
-<script>
-    window.onload = function () {
-        // Đặt thời gian chờ 3 giây (3000 milliseconds)
-        setTimeout(function () {
-            console.log("vao dta")
-            // Lấy phần tử có id là 'toast'á
-            var toastElement = document.getElementById("toasts");
-            console.log(toastElement)
-            // Kiểm tra xem phần tử có tồn tại không
-            if (toastElement) {
-                // Gán display = 'none' để ẩn phần tử
-                toastElement.style.display = "none";
-            }
-        }, 3000); // 3 giây
-    };
-</script>
 </body>
 </html>

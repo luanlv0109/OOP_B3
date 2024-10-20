@@ -9,21 +9,22 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+
 @Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 public class SearchKeyword {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Tự động tạo ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String keyword;  // Từ khóa tìm kiếm
-    private String desiredSuggestion;  // Gợi ý mong muốn xuất hiện
-    private String platform;  // Nền tảng để tìm kiếm (Google, Yahoo, v.v.)
-    private String scheduleFrequency;  // Tần suất tìm kiếm: "daily", "weekly", "monthly"
-    private int timesPerDay;  // Số lần tìm kiếm trong ngày
-    private int timesPerWeek;  // Số lần tìm kiếm trong tuần
-    private int timesPerMonth;  // Số lần tìm kiếm trong tháng
-    private LocalDate createdAt;  // Ngày tạo từ khóa
+    private String keyword;
+    private String desiredSuggestion;
+    private String platform;
+    private String scheduleFrequency;
+    private int timesPerDay;
+    private int timesPerWeek;
+    private int timesPerMonth;
+    private LocalDate createdAt;
 }

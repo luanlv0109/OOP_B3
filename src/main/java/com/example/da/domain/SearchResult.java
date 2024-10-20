@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -11,22 +14,21 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class SearchResult {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Tự động tạo ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String keyword;  // Từ khóa đã được tìm kiếm
-    private String suggestion;  // Gợi ý trả về từ tìm kiếm
-    private String screenshotPath;  // Đường dẫn đến ảnh chụp màn hình
-    private boolean isMatched;  // Đúng nếu gợi ý khớp với gợi ý mong muốn
+    private String keyword;
+    private String suggestion;
+    private String screenshotPath;
+    private int isMatched;
 
-    // Thêm các cột riêng cho ngày, tháng và năm
-    private int day;    // Ngày
-    private int month;  // Tháng
-    private int year;   // Năm
+    private int day;
+    private int month;
+    private int year;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "search_keyword_id")  // Tạo cột lưu tham chiếu tới SearchKeyword
-    private SearchKeyword searchKeyword;  // Tham chiếu tới từ khóa đã sinh ra kết quả này
-
-    // Các getter và setter cho mỗi thuộc tính
+    @JoinColumn(name = "search_keyword_id")
+    private SearchKeyword searchKeyword;
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private LocalDateTime createdAt;
 }

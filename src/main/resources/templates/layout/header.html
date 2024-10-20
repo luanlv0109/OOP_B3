@@ -4,17 +4,51 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title th:text="${title}">Trang Quản Trị</title>
+  <style>
+    body {
+      padding-top: 80px; /* Đảm bảo phần nội dung không bị header che khuất */
+      margin: 0;
+    }
+
+    header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 60px;
+      background-color: #0072ff;
+      color: white;
+      z-index: 1000; /* Đảm bảo header nằm trên cùng */
+    }
+
+    h1 {
+      margin: 0;
+      line-height: 60px; /* Căn giữa dọc cho văn bản trong header */
+      text-align: center;
+    }
+
+    .language-selector {
+      position: absolute;
+      top: 0;
+      right: 10px;
+      padding: 10px;
+    }
+  </style>
 </head>
 <body>
-<header th:fragment="header(title)">
-  <div style="background-color: #0072ff; color: white; padding: 1em; text-align: center;">
+<header style="position: fixed; top:0; left: 0;right: 0; height: 70px; background-color: #0072ff; z-index: 101"  th:fragment="header(title)">
+  <div style=" color: white; text-align: center;">
     <h1 th:text="${title}"></h1>
   </div>
 
   <!-- Language Selector -->
-  <div style="text-align: right; padding: 1em;">
-    <span th:text="#{lang.change}"></span>:
-    <select id="locales">
+  <div class="language-selector" style="
+  padding-left: 10px;
+   display: flex;
+    flex-direction: column;
+    width: 202px;">
+    <span th:text="#{lang.change}">:</span>
+    <select id="locales" style="border-radius: 2px">
       <option value="" disabled selected>Select Language</option>
       <option value="en" th:text="#{lang.eng}">English</option>
       <option value="vi" th:text="#{lang.vi}">Tiếng Việt</option>
@@ -54,7 +88,6 @@
       window.location.href = window.location.pathname + '?lang=' + lang;
     }
   }
-
 </script>
 
 </body>

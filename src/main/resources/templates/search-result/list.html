@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Search Results</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+
+<!-- Redirect to login if user is not logged in -->
+<div th:if="${session.user == null}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/login}]]*/ '/login';
+        /*]]>*/
+    </script>
+</div>
+
+<!-- Header -->
+<div id="header" th:replace="layout/header :: header(#{admin.manageAchievementsHeader})"></div>
+
+<!-- Sidebar -->
+<div id="sidebar" th:replace="layout/sidebar :: sidebar"></div>
+
+<!-- Nội dung chính của trang -->
+<div class="main-content">
+    <!-- Toast Notification -->
+    <div id="toasts">
+        <span th:text="${successMessage}"></span>
+    </div>
+    <div class="filter-form">
+        <form th:action="@{/admin/search-result/list}" method="post">
+            <label for="month">[[#{search.month}]]:</label>
+            <select id="month" name="month">
+                <option value="1" th:selected="${selectedMonth == 1}">[[#{month.january}]]</option>
+                <option value="2" th:selected="${selectedMonth == 2}">[[#{month.february}]]</option>
+                <option value="3" th:selected="${selectedMonth == 3}">[[#{month.march}]]</option>
+                <option value="4" th:selected="${selectedMonth == 4}">[[#{month.april}]]</option>
+                <option value="5" th:selected="${selectedMonth == 5}">[[#{month.may}]]</option>
+                <option value="6" th:selected="${selectedMonth == 6}">[[#{month.june}]]</option>
+                <option value="7" th:selected="${selectedMonth == 7}">[[#{month.july}]]</option>
+                <option value="8" th:selected="${selectedMonth == 8}">[[#{month.august}]]</option>
+                <option value="9" th:selected="${selectedMonth == 9}">[[#{month.september}]]</option>
+                <option value="10" th:selected="${selectedMonth == 10}">[[#{month.october}]]</option>
+                <option value="11" th:selected="${selectedMonth == 11}">[[#{month.november}]]</option>
+                <option value="12" th:selected="${selectedMonth == 12}">[[#{month.december}]]</option>
+            </select>
+
+            <label for="year">[[#{search.year}]]:</label>
+            <input type="number" id="year" name="year" th:value="${selectedYear}" min="2000" max="2100" required>
+
+            <button type="submit">[[#{search.filter}]]</button>
+        </form>
+        <!-- Nút chuyển đổi sang trang 'detail-list.html' với giá trị của month và year -->
+        <!-- Nút chuyển đổi sang trang 'detail-list.html' với giá trị của month và year -->
+        <!-- Nút chuyển đổi sang trang 'detail-list.html' với giá trị của month và year -->
+        <button th:onclick="|window.location.href='/admin/search-result/detail-list?month=' + ${selectedMonth} + '&year=' + ${selectedYear};|">
+            Chuyển sang chi tiết
+        </button>
+
+
+    </div>
+    <div th:if="${#lists.isEmpty(results)}">
+        [[#{search.noResults}]]
+    </div>
+
+    <table th:unless="${#lists.isEmpty(results)}">
+        <thead>
+        <tr>
+            <th style="width: 100px;">[[#{search.stt}]]</th>
+            <th style="width: 100px;">[[#{search.keywords}]]</th>
+            <th style="width: 100px;">[[#{search.desiredSuggestion}]]</th>
+            <th style="width: 100px;">[[#{search.platform}]]</th>
+            <th style="width: 100px;">[[#{search.match}]]</th>
+            <th th:each="day : ${#numbers.sequence(1, 31)}" th:text="${day}"></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="entry, stat : ${results}">
+            <td style="width: 100px;" th:text="${stat.index + 1}"></td>
+            <td style="width: 100px;" th:text="${entry.keyword}"></td>
+            <td style="width: 100px;" th:text="${entry.desiredSuggestion}"></td>
+            <td style="width: 100px;">
+                 <span th:if="${entry.platform.equals('Google')}" style="display: flex; align-items: center;">
+                      <img src="/images/pgg.png" alt="Google Icon" style="width: 20px; height: 20px; filter: hue-rotate(0deg) saturate(100) brightness(1.2) contrast(2) sepia(1); margin-right: 5px;">
+                    <span th:text="${entry.platform}" style="color: red; font-weight: bold;">Google</span>
+            </span>
+                <span th:if="${entry.platform.equals('Yahoo')}">
+                     <img src="/images/yah.png" alt="Yahoo Icon" style="width: 20px; height: 20px; display: inline; filter: hue-rotate(200deg) saturate(100) brightness(1.2) contrast(2) sepia(1);">
+                     <span th:text="${entry.platform}" style="color: blue; font-weight: bold;"> Yahoo</span>
+                </span>
+            </td>
+            <td style="width: 100px;" th:text="${entry.match}"></td>
+            <td th:each="day : ${#numbers.sequence(1, 31)}">
+                <div th:if="${entry.data != null and entry.data.size() >= day}">
+                    <div th:if="${entry.data[day - 1].img != null and entry.data[day - 1].img.size() > 0}">
+                        <img th:src="@{/path/to/icon.png}" th:onclick="showImageModal([[${entry.data[day - 1].img[0]}]], [[${entry.keyword}]], [[${entry.data[day - 1].date != null ? entry.data[day - 1].date : 'Không có ngày'}]])" style="cursor: pointer;" alt=" " />
+                    </div>
+                    <div th:if="${entry.data[day - 1].suggestion != null}" th:style="'width: 200px;'">
+                        <span th:utext="${entry.data[day - 1].suggestion}"></span>
+                    </div>
+                    <div th:if="${entry.data[day - 1].suggestion == null}" th:style="'width: 20px;'">
+                        <!-- Ô trống nếu không có suggestion -->
+                    </div>
+                </div>
+                <div th:if="${entry.data == null or entry.data.size() < day}" th:style="'width: 200px;'">
+                    <span></span> <!-- Hiển thị dấu gạch ngang khi thiếu dữ liệu -->
+                </div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Modal để hiển thị ảnh -->
+    <div id="imageModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <p><strong>Từ khóa đầu vào:</strong> "<span id="inputKeyword"></span>"
+            <p><strong>Ngày:</strong> <span id="inputDate"></span></p> <!-- Thêm phần hiển thị ngày -->
+            </p>
+            <img id="modalImage" alt="Image not found" style="max-width: 100%; display: block; margin: 0 auto;">
+            <button onclick="closeModal()">Đóng</button>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+    </script>
+</div>
+
+<div th:replace="layout/footer :: footer(lang=${#locale.language})"></div>
+<script src="/js/language-selector.js"></script>
+<script src="/js/resulted-search.js"></script>
+
+</body>
+</html>

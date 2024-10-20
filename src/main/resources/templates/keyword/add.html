@@ -2,95 +2,17 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Thêm Từ Khóa</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
+    <link rel="stylesheet" href="/css/common.css"> <!-- Linked external CSS -->
 
-        .main-content {
-            margin-left: 220px;
-            padding: 20px;
-        }
-
-        .grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 20px;
-            background-color: #fff;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-
-        .col-6 {
-            width: calc(50% - 10px);
-            box-sizing: border-box;
-        }
-
-        input[type="text"], input[type="number"], select {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 14px;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .full-width {
-            width: calc(100% - 10px);
-            box-sizing: border-box;
-        }
-
-        button {
-            width: 100%;
-            padding: 12px;
-            background-color: #0083b0;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        button:hover {
-            background-color: #00729a;
-        }
-
-        #toast-error {
-            position: absolute;
-            top: 70px;
-            right: 20px;
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            padding: 15px;
-            border-radius: 5px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            font-size: 14px;
-        }
-
-        .success-message {
-            color: green;
-            font-weight: bold;
-        }
-
-        .error-message {
-            color: red;
-            font-weight: bold;
-        }
-    </style>
 </head>
 <body>
-
+<div th:if="${session.user == null}">
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        window.location.href = /*[[@{/login}]]*/ '/login';
+        /*]]>*/
+    </script>
+</div>
 <!-- Header -->
 <div th:replace="layout/header :: header(#{keyword.addKeywordHeader})"></div>
 
@@ -122,7 +44,7 @@
             <!-- Chọn nền tảng tìm kiếm -->
             <div class="col-6">
                 <label for="platform" th:text="#{label.platform}">Nền tảng:</label>
-                <select th:field="*{platform}">
+                <select class="platform" th:field="*{platform}">
                     <option value="Google" th:text="#{label.google}">Google</option>
                     <option value="Yahoo" th:text="#{label.yahoo}">Yahoo</option>
                 </select>

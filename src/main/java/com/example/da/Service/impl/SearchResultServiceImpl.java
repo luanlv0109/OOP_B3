@@ -5,7 +5,6 @@ import com.example.da.domain.SearchKeyword;
 import com.example.da.domain.SearchResult;
 import com.example.da.repository.SearchKeywordRepository;
 import com.example.da.repository.SearchResultRepository;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +14,6 @@ import java.util.List;
 import java.util.Map;
 
 @Service
-@Slf4j
 public class SearchResultServiceImpl implements SearchResultService {
 
     @Autowired
@@ -38,46 +36,42 @@ public class SearchResultServiceImpl implements SearchResultService {
             keywordData.put("desiredSuggestion", keyword.getDesiredSuggestion());
             keywordData.put("platform", keyword.getPlatform());
 
-            // Danh sách chứa dữ liệu cho mỗi ngày
             List<Map<String, Object>> dailySuggestions = new ArrayList<>();
-
-            // Khởi tạo danh sách cho mỗi ngày từ 1 đến 31
             for (int day = 1; day <= 31; day++) {
                 Map<String, Object> suggestionData = new HashMap<>();
-                suggestionData.put("day", day); // Thêm ngày vào cặp key-value
+                suggestionData.put("day", day);
 
-                // Lấy dữ liệu cho ngày hiện tại
-                StringBuilder suggestionsForDay = new StringBuilder(); // Sử dụng StringBuilder để xây dựng chuỗi
-                List<String> imgPaths = new ArrayList<>(); // Danh sách để lưu trữ đường dẫn hình ảnh
+                StringBuilder suggestionsForDay = new StringBuilder();
+                List<String> imgPaths = new ArrayList<>();
 
-                List<SearchResult> searchResults = searchResultRepository.findBySearchKeywordAndMonthAndYearAndDay(keyword, month, year , day);
+                List<SearchResult> searchResults = searchResultRepository.findBySearchKeywordAndMonthAndYearAndDay(keyword, month, year, day);
 
                 for (SearchResult result : searchResults) {
                     if (result.getDay() == day) {
-                        suggestionsForDay.append(result.getSuggestion()).append("<br>"); // Thêm suggestion vào chuỗi
+                        suggestionsForDay.append(result.getSuggestion()).append("<br>");
                     }
-                    if (result.getScreenshotPath() != null) { // Kiểm tra nếu đường dẫn hình ảnh không null
-                        imgPaths.add(result.getScreenshotPath()); // Thêm vào danh sách hình ảnh
+                    if (result.getScreenshotPath() != null) {
+                        imgPaths.add(result.getScreenshotPath());
                     }
                 }
-                suggestionData.put("img", imgPaths); // Thêm đường dẫn hình ảnh vào suggestionData
+                suggestionData.put("img", imgPaths);
 
                 if (suggestionsForDay.length() == 0) {
-                    suggestionData.put("suggestion", null); // Nếu không có dữ liệu, thêm {}
+                    suggestionData.put("suggestion", null);
                 } else {
-                    suggestionData.put("suggestion", suggestionsForDay.toString()); // Gán chuỗi vào suggestion
+                    suggestionData.put("suggestion", suggestionsForDay.toString());
                 }
-
-                dailySuggestions.add(suggestionData); // Thêm vào danh sách dailySuggestions
+                if (searchResults.size() > 0) {
+                    keywordData.put("match", searchResults.get(0).getIsMatched());
+                    suggestionData.put("date" ,searchResults.get(0).getCreatedAt() );
+                } else {
+                    keywordData.put("match", 0);
+                }
+                dailySuggestions.add(suggestionData);
             }
-
-            keywordData.put("data", dailySuggestions); // Gán danh sách vào keywordData
+            keywordData.put("data", dailySuggestions);
             resultsList.add(keywordData);
         }
-
-        log.info("data: {}", resultsList);
         return resultsList;
     }
-
-
 }

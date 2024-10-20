@@ -5,7 +5,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         if (selectedLang) {
             localStorage.setItem('language', selectedLang);
-            console.log("Saved language to localStorage: " + selectedLang);
+            console.log("Saved language to localStorage: " + selectedLang , window.location.pathname);
             window.location.href = window.location.pathname + '?lang=' + selectedLang;
         }
     });

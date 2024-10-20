@@ -6,8 +6,6 @@ import com.example.da.domain.SearchResult;
 import com.example.da.repository.SearchKeywordRepository;
 import com.example.da.repository.SearchResultRepository;
 import io.github.bonigarcia.wdm.WebDriverManager;
-import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
 import org.openqa.selenium.*;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -21,15 +19,12 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 
 @Component
-@Slf4j
 public class keywordScheduled {
     @Autowired
     private FilesStorageService filesStorageService;
@@ -38,61 +33,70 @@ public class keywordScheduled {
     @Autowired
     private SearchResultRepository searchResultRepository;
 
-    private final Path root = Path.of("./uploads");
-
-//    @Scheduled(cron = "0 */1 * * * ?")
-    public void runScheduledSearches() {
-        List<SearchKeyword> keywords = getAllKeywords();
-
-        if (keywords.isEmpty()) {
-            return;
-        }
-
-        for (SearchKeyword keyword : keywords) {
-            performSearch(keyword);
+    @Scheduled(cron = "30 06 17 * * ?")
+    public void processEndOfThereDayData() {
+        LocalDate startDate = LocalDate.of(2024, 10, 1);
+        LocalDate endDate = LocalDate.of(2024, 10, 16);
+        while (!startDate.isAfter(endDate)) {
+            runScheduledSearches(startDate);
+            startDate = startDate.plusDays(1);
         }
     }
 
-    public void performSearch(SearchKeyword keyword) {
+    public void runScheduledSearches(LocalDate date) {
+        List<SearchKeyword> keywords = getAllKeywords();
+        if (keywords.isEmpty()) {
+            return;
+        }
+        for (SearchKeyword keyword : keywords) {
+            performSearch(keyword, date);
+        }
+    }
+
+    public void performSearch(SearchKeyword keyword, LocalDate date) {
         WebDriverManager.chromedriver().setup();
         ChromeOptions options = new ChromeOptions();
+        options.addArguments("--headless");
+        options.addArguments("--disable-gpu", "--disable-extensions", "--no-sandbox", "--disable-dev-shm-usage");
+
         WebDriver driver = new ChromeDriver(options);
 
         try {
-            driver.get("https://www.google.com");
+            if (keyword.getPlatform().equalsIgnoreCase("Google")) {
+                driver.get("https://www.google.com");
+                WebElement searchBox = driver.findElement(By.name("q"));
+                searchBox.sendKeys(keyword.getKeyword());
+            } else if (keyword.getPlatform().equalsIgnoreCase("Yahoo")) {
+                driver.get("https://search.yahoo.com");
+                WebElement searchBox = driver.findElement(By.name("p"));
+                searchBox.sendKeys(keyword.getKeyword());
+            } else {
+                return;
+            }
 
-            WebElement searchBox = driver.findElement(By.name("q"));
-            searchBox.sendKeys(keyword.getKeyword());
             Thread.sleep(2000);
-
             List<WebElement> suggestions = driver.findElements(By.xpath("//ul[@role='listbox']//li"));
+
             StringBuilder suggestionsHtml = new StringBuilder();
-            boolean isMatched = false;  // Biến này sẽ theo dõi xem có gợi ý nào khớp không
+            int isMatched = 0;
 
             for (WebElement suggestion : suggestions) {
                 String suggestionText = suggestion.getText();
-                log.info("Gợi ý nhận được: {}", suggestionText);
 
-                // So sánh với gợi ý mong muốn (desiredSuggestion)
                 if (suggestionText.equalsIgnoreCase(keyword.getDesiredSuggestion())) {
-                    log.info("Gợi ý '{}' đã khớp với gợi ý mong muốn: '{}'", suggestionText, keyword.getDesiredSuggestion());
-                    // Bọc gợi ý khớp với thẻ <strong>
                     suggestionsHtml.append("<strong>").append(suggestionText).append("</strong><br>");
-                    isMatched = true;  // Ghi nhận rằng đã tìm thấy gợi ý khớp
+                    isMatched = 2;
+                } else if (suggestionText.toLowerCase().contains(keyword.getDesiredSuggestion().toLowerCase())) {
+                    suggestionsHtml.append(suggestionText).append("<br>");
+                    isMatched = Math.max(isMatched, 1);
                 } else {
-                    log.info("Gợi ý '{}' không khớp với gợi ý mong muốn: '{}'", suggestionText, keyword.getDesiredSuggestion());
-                    // Thêm gợi ý vào mà không cần bọc <strong>
                     suggestionsHtml.append(suggestionText).append("<br>");
                 }
             }
 
-// Lưu kết quả tìm kiếm với tất cả các gợi ý được bọc HTML
-            saveSearchResult(keyword, suggestionsHtml.toString(), isMatched ,  takeScreenshot(driver, keyword));
+            saveSearchResult(keyword, suggestionsHtml.toString(), isMatched, takeScreenshot(driver, keyword), date);
 
-
-            Thread.sleep(2000);
         } catch (InterruptedException | IOException e) {
-            log.error("Lỗi khi thực hiện tìm kiếm cho từ khóa {}: {}", keyword.getKeyword(), e.getMessage(), e);
         } finally {
             driver.quit();
         }
@@ -101,7 +105,6 @@ public class keywordScheduled {
     private String takeScreenshot(WebDriver driver, SearchKeyword keyword) throws IOException {
         File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
 
-        // Chuyển file ảnh chụp màn hình thành MultipartFile
         MultipartFile multipartFile = new MultipartFile() {
             @Override
             public String getName() {
@@ -140,29 +143,26 @@ public class keywordScheduled {
 
             @Override
             public void transferTo(File dest) throws IOException, IllegalStateException {
-                Files.copy(screenshot.toPath(), dest.toPath());
+                Files.copy(screenshot.toPath(), dest.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
         };
 
-        // Gọi phương thức save của FilesStorageService để lưu file
         return filesStorageService.save(multipartFile);
-
     }
 
-        private void saveSearchResult(SearchKeyword keyword, String suggestion, boolean isMatched , String screenshotPath) {
+    private void saveSearchResult(SearchKeyword keyword, String suggestion, int isMatched, String screenshotPath, LocalDate date) {
         SearchResult result = new SearchResult();
         result.setKeyword(keyword.getKeyword());
         result.setSuggestion(suggestion);
-        result.setMatched(isMatched);
+        result.setIsMatched(isMatched);
         result.setSearchKeyword(keyword);
-        result.setScreenshotPath(screenshotPath);  // Lưu đường dẫn ảnh vào DB
-
-            // Lấy thời gian hiện tại và lưu vào các cột ngày, tháng, năm
-            LocalDateTime now = LocalDateTime.now();
-            result.setDay(now.getDayOfMonth());
-            result.setMonth(now.getMonthValue());
-            result.setYear(now.getYear());
+        result.setScreenshotPath(screenshotPath);
+        result.setDay(date.getDayOfMonth());
+        result.setMonth(date.getMonthValue());
+        result.setYear(date.getYear());
+        result.setCreatedAt(LocalDateTime.now());
         searchResultRepository.save(result);
+
     }
 
     public List<SearchKeyword> getAllKeywords() {
