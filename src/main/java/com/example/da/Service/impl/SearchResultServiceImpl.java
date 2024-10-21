@@ -36,10 +36,14 @@ public class SearchResultServiceImpl implements SearchResultService {
             keywordData.put("desiredSuggestion", keyword.getDesiredSuggestion());
             keywordData.put("platform", keyword.getPlatform());
 
-            List<Map<String, Object>> dailySuggestions = new ArrayList<>();
+            int check = 2;
+            boolean hasZero = false;
+            boolean hasTwo = false;
+
+            List<Map<String, Object>> data = new ArrayList<>();
             for (int day = 1; day <= 31; day++) {
-                Map<String, Object> suggestionData = new HashMap<>();
-                suggestionData.put("day", day);
+                Map<String, Object> dataSubItem = new HashMap<>();
+                dataSubItem.put("day", day);
 
                 StringBuilder suggestionsForDay = new StringBuilder();
                 List<String> imgPaths = new ArrayList<>();
@@ -54,22 +58,35 @@ public class SearchResultServiceImpl implements SearchResultService {
                         imgPaths.add(result.getScreenshotPath());
                     }
                 }
-                suggestionData.put("img", imgPaths);
+                dataSubItem.put("img", imgPaths);
 
                 if (suggestionsForDay.length() == 0) {
-                    suggestionData.put("suggestion", null);
+                    dataSubItem.put("suggestion", null);
                 } else {
-                    suggestionData.put("suggestion", suggestionsForDay.toString());
+                    int isMatched = searchResults.get(0).getIsMatched();
+                    if (isMatched == 0) {
+                        hasZero = true;
+                    } else if (isMatched == 2) {
+                        hasTwo = true;
+                    }
+
+                    dataSubItem.put("date" , searchResults.get(0).getCreatedAt().toString());
+                    dataSubItem.put("suggestion", suggestionsForDay.toString());
                 }
-                if (searchResults.size() > 0) {
-                    keywordData.put("match", searchResults.get(0).getIsMatched());
-                    suggestionData.put("date" ,searchResults.get(0).getCreatedAt() );
-                } else {
-                    keywordData.put("match", 0);
-                }
-                dailySuggestions.add(suggestionData);
+
+                data.add(dataSubItem);
             }
-            keywordData.put("data", dailySuggestions);
+
+            if (hasZero && hasTwo) {
+                check = 1;
+            } else if (hasZero) {
+                check = 0;
+            } else if (hasTwo) {
+                check = 2;
+            }
+
+            keywordData.put("match" , check);
+            keywordData.put("data", data);
             resultsList.add(keywordData);
         }
         return resultsList;

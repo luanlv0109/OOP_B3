@@ -89,11 +89,13 @@
                      <span th:text="${entry.platform}" style="color: blue; font-weight: bold;"> Yahoo</span>
                 </span>
             </td>
-            <td style="width: 100px;" th:text="${entry.match}"></td>
+            <td style="width: 100px;" th:text="${entry.match == 0 ? 'Không khớp' : (entry.match == 1 ? 'Khớp một phần' : 'Khớp toàn phần')}"></td>
             <td th:each="day : ${#numbers.sequence(1, 31)}">
                 <div th:if="${entry.data != null and entry.data.size() >= day}">
                     <div th:if="${entry.data[day - 1].img != null and entry.data[day - 1].img.size() > 0}">
-                        <img th:src="@{/path/to/icon.png}" th:onclick="showImageModal([[${entry.data[day - 1].img[0]}]], [[${entry.keyword}]], [[${entry.data[day - 1].date != null ? entry.data[day - 1].date : 'Không có ngày'}]])" style="cursor: pointer;" alt=" " />
+                        <img th:src="@{/path/to/icon.png}"
+                             th:onclick="showImageModal([[${entry.data[day - 1].img[0]}]], [[${entry.keyword}]], [[${entry.data[day - 1].date != null ? entry.data[day - 1].date : 'Không có ngày'}]])"
+                             style="cursor: pointer;" alt=" " />
                     </div>
                     <div th:if="${entry.data[day - 1].suggestion != null}" th:style="'width: 200px;'">
                         <span th:utext="${entry.data[day - 1].suggestion}"></span>

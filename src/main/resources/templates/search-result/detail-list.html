@@ -85,7 +85,7 @@
                      <span th:text="${entry.platform}" style="color: blue; font-weight: bold;"> Yahoo</span>
                 </span>
             </td>
-            <td style="width: 100px;" th:text="${entry.match}"></td>
+            <td style="width: 100px;" th:text="${entry.match == 0 ? 'Không khớp' : (entry.match == 1 ? 'Khớp một phần' : 'Khớp toàn phần')}"></td>
             <td th:each="day : ${#numbers.sequence(1, 31)}">
                 <div th:if="${entry.data != null and entry.data.size() >= day}">
                     <div th:if="${entry.data[day - 1].img != null and entry.data[day - 1].img.size() > 0}">

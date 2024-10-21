@@ -33,7 +33,7 @@ public class SearchKeywordServiceImpl implements SearchKeywordService {
         searchKeyword.setTimesPerDay(searchKeywordDTO.getTimesPerDay());
         searchKeyword.setTimesPerWeek(searchKeywordDTO.getTimesPerWeek());
         searchKeyword.setTimesPerMonth(searchKeywordDTO.getTimesPerMonth());
-        searchKeyword.setCreatedAt(LocalDate.now());  // Gán ngày tạo hiện tại
+        searchKeyword.setCreatedAt(LocalDate.now());
 
         searchKeywordRepository.save(searchKeyword);
 

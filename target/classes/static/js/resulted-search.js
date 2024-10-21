@@ -1,16 +1,26 @@
-function showImageModal(imagePath, inputKeyword) {
+function showImageModal(imagePath, inputKeyword , inputDate) {
     var modal = document.getElementById("imageModal");
     var modalImg = document.getElementById("modalImage");
-    var modalInputDate = document.getElementById("inputDate"); // Thêm biến cho ngày
-
+    var modalInputDate = document.getElementById("inputDate");
     var modalInputKeyword = document.getElementById("inputKeyword");
 
-    // Đặt thông tin vào các phần tử trong modal
     modalImg.src = 'http://localhost:8080/admin/employees/files/' + imagePath;
     modalInputKeyword.textContent = inputKeyword;
-    modalInputDate.textContent = (typeof inputDate === 'string' && inputDate.trim() !== '') ? inputDate : "Không có ngày";
 
-    console.log(imagePath)
+    if (typeof inputDate === 'string' && inputDate.trim() !== '') {
+        var date = new Date(inputDate);
+
+        var formattedDate = ('0' + date.getDate()).slice(-2) + '/' +
+            ('0' + (date.getMonth() + 1)).slice(-2) + '/' +
+            date.getFullYear() + ' ' +
+            ('0' + date.getHours()).slice(-2) + ':' +
+            ('0' + date.getMinutes()).slice(-2);
+
+        modalInputDate.textContent = formattedDate;
+    } else {
+        modalInputDate.textContent = "Không có ngày";
+    }
+
     // Hiển thị modal
     modal.style.display = "flex";
 }
